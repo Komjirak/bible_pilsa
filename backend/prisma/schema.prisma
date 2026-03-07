@@ -1,0 +1,72 @@
+// Prisma schema — Bible Pilsa (말씀필사)
+// DB: PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 사용자 (토스 userKey 기반)
+model User {
+  id        Int      @id @default(autoincrement())
+  userKey   String   @unique                    // 토스 OAuth2 userKey
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  completions      CompletionRecord[]
+  weeklyChallenges WeeklyChallenge[]
+  pointTransactions PointTransaction[]
+
+  @@index([userKey])
+}
+
+// 일별 필사 완료 기록
+model CompletionRecord {
+  id          Int      @id @default(autoincrement())
+  userKey     String
+  date        String   // YYYY-MM-DD (KST)
+  verseRef    String   // 예: "요한복음 3:16"
+  similarityScore Float  // 0.0~1.0 (서버사이드 검증값)
+  completedAt DateTime @default(now())
+
+  user User @relation(fields: [userKey], references: [userKey])
+
+  @@unique([userKey, date])            // 하루 1회만 허용 (Fraud 방지)
+  @@index([userKey, date])
+}
+
+// 주간 챌린지 상태 (월~일 KST 기준)
+model WeeklyChallenge {
+  id              Int      @id @default(autoincrement())
+  userKey         String
+  weekStart       String   // YYYY-MM-DD (해당 주의 월요일)
+  completedDays   Int      @default(0)    // 0~7
+  pointGranted    Boolean  @default(false) // 10원 지급 완료 여부
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user User @relation(fields: [userKey], references: [userKey])
+
+  @@unique([userKey, weekStart])       // 주별 1개만 존재
+  @@index([userKey, weekStart])
+}
+
+// 포인트 트랜잭션 이력
+model PointTransaction {
+  id          Int      @id @default(autoincrement())
+  userKey     String
+  weekStart   String   // YYYY-MM-DD
+  amount      Int      // 포인트 금액 (원)
+  reason      String   // "weekly_complete_7days"
+  tossOrderId String?  // 토스 포인트 API 응답 orderId
+  grantedAt   DateTime @default(now())
+
+  user User @relation(fields: [userKey], references: [userKey])
+
+  @@unique([userKey, weekStart])       // 주별 중복 지급 방지
+  @@index([userKey])
+}

@@ -1,0 +1,172 @@
+/* 말씀필사 글로벌 CSS — TDS 컬러 토큰 */
+
+:root {
+  /* Primary */
+  --color-primary: #3182F6;
+  --color-primary-pressed: #1B64DA;
+  --color-primary-subtle: #EBF3FF;
+
+  /* Background */
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #F9FAFB;
+  --color-bg-tertiary: #F2F4F6;
+
+  /* Text */
+  --color-text-primary: #191919;
+  --color-text-secondary: #4E5968;
+  --color-text-tertiary: #8B95A1;
+  --color-text-disabled: #C2C9D1;
+  --color-text-placeholder: rgba(0, 0, 0, 0.15);
+
+  /* Semantic */
+  --color-error: #FF3B30;
+  --color-success: #34C759;
+  --color-warning: #FF9500;
+
+  /* Border */
+  --color-border: #E5E8EB;
+  --color-border-strong: #B0B8C1;
+
+  /* Typography */
+  --font-ui: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  --font-verse: 'Noto Serif KR', 'Georgia', serif;
+}
+
+/* 다크 모드 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-primary: #5A9FFF;
+    --color-primary-pressed: #3B82E0;
+    --color-primary-subtle: #1A2F4A;
+
+    --color-bg-primary: #131516;
+    --color-bg-secondary: #1E2122;
+    --color-bg-tertiary: #262C2E;
+
+    --color-text-primary: #F5F5F5;
+    --color-text-secondary: #8B95A1;
+    --color-text-tertiary: #5E6876;
+    --color-text-disabled: #3E4750;
+    --color-text-placeholder: rgba(255, 255, 255, 0.18);
+
+    --color-border: #2C3137;
+    --color-border-strong: #444C55;
+  }
+}
+
+/* 다크 모드 클래스 강제 적용 */
+.dark {
+  --color-primary: #5A9FFF;
+  --color-primary-pressed: #3B82E0;
+  --color-primary-subtle: #1A2F4A;
+  --color-bg-primary: #131516;
+  --color-bg-secondary: #1E2122;
+  --color-bg-tertiary: #262C2E;
+  --color-text-primary: #F5F5F5;
+  --color-text-secondary: #8B95A1;
+  --color-text-tertiary: #5E6876;
+  --color-text-disabled: #3E4750;
+  --color-text-placeholder: rgba(255, 255, 255, 0.18);
+  --color-border: #2C3137;
+  --color-border-strong: #444C55;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--font-ui);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 버튼 기본 리셋 */
+button {
+  font-family: var(--font-ui);
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* 링크 리셋 */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* 타이포그래피 스케일 */
+.display-1 {
+  font-family: var(--font-verse);
+  font-size: 30px;
+  line-height: 1.7;
+  letter-spacing: -0.3px;
+  font-weight: 400;
+}
+
+.display-2 {
+  font-family: var(--font-verse);
+  font-size: 22px;
+  line-height: 1.6;
+  letter-spacing: -0.2px;
+  font-weight: 400;
+}
+
+.heading-1 {
+  font-size: 22px;
+  line-height: 1.4;
+  letter-spacing: -0.5px;
+  font-weight: 700;
+}
+
+.heading-2 {
+  font-size: 18px;
+  line-height: 1.4;
+  letter-spacing: -0.3px;
+  font-weight: 600;
+}
+
+.body-1 {
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: -0.2px;
+  font-weight: 400;
+}
+
+.body-2 {
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+.caption {
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 400;
+}
+
+.label {
+  font-size: 16px;
+  line-height: 1.0;
+  letter-spacing: -0.2px;
+  font-weight: 600;
+}

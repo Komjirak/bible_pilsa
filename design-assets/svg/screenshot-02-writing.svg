@@ -1,0 +1,84 @@
+<svg width="636" height="1048" viewBox="0 0 636 1048" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- App Screen: Writing (핵심 필사 화면) -->
+  <rect width="636" height="1048" fill="#191F28"/>
+
+  <!-- Status bar -->
+  <rect width="636" height="48" fill="#191F28"/>
+  <text x="48" y="32" font-family="'Helvetica Neue', Arial, sans-serif" font-size="15" fill="rgba(255,255,255,0.9)" font-weight="600">9:41</text>
+  <rect x="540" y="18" width="40" height="16" rx="4" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" fill="none"/>
+  <rect x="542" y="20" width="30" height="12" rx="2" fill="rgba(255,255,255,0.7)"/>
+
+  <!-- Nav bar with back button -->
+  <text x="26" y="88" font-family="'Helvetica Neue', Arial, sans-serif" font-size="28" fill="white">‹</text>
+  <text x="318" y="88" text-anchor="middle" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-weight="700" font-size="20" fill="white">말씀 필사</text>
+  <line x1="0" y1="100" x2="636" y2="100" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+
+  <!-- Progress bar -->
+  <rect x="20" y="116" width="596" height="8" rx="4" fill="rgba(255,255,255,0.1)"/>
+  <rect x="20" y="116" width="238" height="8" rx="4" fill="#3182F6"/>
+  <!-- Progress label -->
+  <text x="44" y="148" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="13" fill="rgba(255,255,255,0.45)">10/38자 입력</text>
+  <text x="592" y="148" text-anchor="end" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="13" fill="rgba(255,255,255,0.45)">26%</text>
+
+  <!-- Verse header -->
+  <text x="318" y="186" text-anchor="middle" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="15" fill="rgba(255,255,255,0.5)">요한복음 3:16</text>
+
+  <!-- OVERLAY WRITING CANVAS (핵심 UX) -->
+  <rect x="20" y="204" width="596" height="496" rx="20" fill="#1E2A3A"/>
+
+  <!-- Instruction label -->
+  <text x="318" y="240" text-anchor="middle" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="13" fill="rgba(255,255,255,0.35)">원문 위에 글자를 덮어쓰세요</text>
+
+  <!-- Line 1: "하나님이 세상을" — first 10 chars done, mixed correct/error -->
+  <!-- Guide text (original verse, gray) -->
+  <text x="44" y="290" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="26" fill="rgba(255,255,255,0.15)">하나님이 세상을 이처럼</text>
+  <!-- User typed text overlay -->
+  <!-- "하나님이 " (7 chars) — all correct, dark -->
+  <text x="44" y="290" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="26" fill="rgba(255,255,255,0.92)">하나님이 </text>
+  <!-- "세" — correct -->
+  <text x="202" y="290" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="26" fill="rgba(255,255,255,0.92)">세</text>
+  <!-- "상" — TYPO (red) -->
+  <text x="230" y="290" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="26" fill="#FF3B30">ㅅ</text>
+  <!-- Cursor blink position -->
+  <rect x="258" y="265" width="2.5" height="28" rx="1" fill="#3182F6">
+    <animate attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite"/>
+  </rect>
+
+  <!-- Line 2: full guide, not yet typed -->
+  <text x="44" y="338" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="26" fill="rgba(255,255,255,0.15)">사랑하사 독생자를 주셨으니</text>
+
+  <!-- Line 3: full guide -->
+  <text x="44" y="386" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="26" fill="rgba(255,255,255,0.15)">이는 저를 믿는 자마다</text>
+
+  <!-- Line 4: full guide -->
+  <text x="44" y="434" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="26" fill="rgba(255,255,255,0.15)">멸망하지 않고 영생을</text>
+
+  <!-- Line 5: full guide -->
+  <text x="44" y="482" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="26" fill="rgba(255,255,255,0.15)">얻게 하려 하심이라</text>
+
+  <!-- Error tooltip (appears on typo) -->
+  <rect x="230" y="300" width="124" height="32" rx="8" fill="#FF3B30"/>
+  <text x="292" y="321" text-anchor="middle" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="13" fill="white">오타! 다시 확인하세요</text>
+  <!-- Tooltip tail -->
+  <polygon points="252,300 264,285 276,300" fill="#FF3B30"/>
+
+  <!-- Hidden input indicator -->
+  <rect x="44" y="595" width="548" height="48" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+  <text x="318" y="625" text-anchor="middle" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="14" fill="rgba(255,255,255,0.25)">글자를 입력하면 위 원문 위에 표시됩니다</text>
+
+  <!-- Tips -->
+  <rect x="20" y="716" width="596" height="60" rx="14" fill="rgba(49,130,246,0.08)"/>
+  <text x="38" y="742" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="14" fill="rgba(255,255,255,0.5)">Tip</text>
+  <text x="72" y="742" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="14" fill="rgba(255,255,255,0.7)">정확히 일치하면 진한 글자, 오타는 빨간색으로 표시</text>
+  <text x="72" y="764" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="14" fill="rgba(255,255,255,0.7)">돼요. 한 글자씩 천천히 따라 써보세요.</text>
+
+  <!-- Complete button (disabled state) -->
+  <rect x="20" y="796" width="596" height="64" rx="18" fill="rgba(49,130,246,0.35)"/>
+  <text x="318" y="836" text-anchor="middle" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-weight="700" font-size="20" fill="rgba(255,255,255,0.5)">필사 완료 (26% — 더 써야 해요)</text>
+
+  <!-- Copyright footer -->
+  <text x="318" y="900" text-anchor="middle" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="12" fill="rgba(255,255,255,0.3)">성경 번역 출처: 대한성서공회 개역한글판 (1961년판)</text>
+
+  <!-- Home indicator -->
+  <rect x="218" y="1010" width="200" height="5" rx="2.5" fill="rgba(255,255,255,0.25)"/>
+</svg>

@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+  <!-- Background: Toss Blue full square (앱스토어 제출용 — 크롭 없이 꽉 찬 사각형) -->
+  <rect width="600" height="600" fill="#3182F6"/>
+
+  <!--
+    성경책 아이콘 — og-image 로고마크 기준, 3.5× 확대
+    transform="translate(-85,-85) scale(3.5)" 적용
+    stroke-width: 6(원본) → 8 (더 굵게)
+  -->
+  <g transform="translate(-85,-85) scale(3.5)">
+    <!-- 왼쪽 페이지 -->
+    <path d="M51 66 Q51 58 59 58 L105 58 L105 154 Q105 162 97 162 L59 162 Q51 162 51 154 Z"
+          fill="none" stroke="white" stroke-width="8" stroke-linejoin="round"/>
+    <!-- 오른쪽 페이지 -->
+    <path d="M169 66 Q169 58 161 58 L115 58 L115 154 Q115 162 123 162 L161 162 Q169 162 169 154 Z"
+          fill="none" stroke="white" stroke-width="8" stroke-linejoin="round"/>
+    <!-- 책등 상단·하단 연결선 -->
+    <line x1="105" y1="58" x2="115" y2="58" stroke="white" stroke-width="8"/>
+    <line x1="105" y1="154" x2="115" y2="154" stroke="white" stroke-width="8"/>
+    <!-- 책등 중앙 주름선 -->
+    <line x1="110" y1="63" x2="110" y2="149" stroke="rgba(255,255,255,0.3)" stroke-width="2.5"/>
+
+    <!-- 왼쪽 페이지 텍스트 라인 (말씀 표현) -->
+    <line x1="60" y1="90"  x2="97" y2="90"  stroke="rgba(255,255,255,0.75)" stroke-width="4.5" stroke-linecap="round"/>
+    <line x1="60" y1="107" x2="97" y2="107" stroke="rgba(255,255,255,0.75)" stroke-width="4.5" stroke-linecap="round"/>
+    <line x1="60" y1="124" x2="80" y2="124" stroke="rgba(255,255,255,0.75)" stroke-width="4.5" stroke-linecap="round"/>
+
+    <!-- 펜 (오른쪽 페이지 위, -30° 기울기) -->
+    <g transform="translate(118,88) rotate(-30)">
+      <rect x="0" y="0" width="8" height="42" rx="2" fill="white"/>
+      <polygon points="4,42 0,52 8,52" fill="#FFD233"/>
+      <polygon points="4,46 1.5,52 6.5,52" fill="#B8941A"/>
+      <rect x="6" y="4" width="3" height="26" rx="1.5" fill="rgba(200,220,255,0.7)"/>
+    </g>
+
+    <!-- 오른쪽 페이지 — 완료된 라인 -->
+    <line x1="118" y1="97"  x2="160" y2="97"  stroke="rgba(255,255,255,0.75)" stroke-width="4.5" stroke-linecap="round"/>
+    <!-- 오른쪽 페이지 — 현재 필사 중인 라인 (노란색 강조) -->
+    <line x1="118" y1="113" x2="160" y2="113" stroke="#FFD233" stroke-width="4.5" stroke-linecap="round"/>
+  </g>
+</svg>

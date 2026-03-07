@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="1000" height="1000">
+  <!-- 600x600 디자인 동일 — SVG 자동 스케일링으로 1000x1000 렌더링 -->
+
+  <!-- Background: Toss Blue full square (앱스토어 제출용 — 크롭 없이 꽉 찬 사각형) -->
+  <rect width="600" height="600" fill="#3182F6"/>
+
+  <g transform="translate(-85,-85) scale(3.5)">
+    <path d="M51 66 Q51 58 59 58 L105 58 L105 154 Q105 162 97 162 L59 162 Q51 162 51 154 Z"
+          fill="none" stroke="white" stroke-width="8" stroke-linejoin="round"/>
+    <path d="M169 66 Q169 58 161 58 L115 58 L115 154 Q115 162 123 162 L161 162 Q169 162 169 154 Z"
+          fill="none" stroke="white" stroke-width="8" stroke-linejoin="round"/>
+    <line x1="105" y1="58"  x2="115" y2="58"  stroke="white" stroke-width="8"/>
+    <line x1="105" y1="154" x2="115" y2="154" stroke="white" stroke-width="8"/>
+    <line x1="110" y1="63"  x2="110" y2="149" stroke="rgba(255,255,255,0.3)" stroke-width="2.5"/>
+
+    <line x1="60" y1="90"  x2="97" y2="90"  stroke="rgba(255,255,255,0.75)" stroke-width="4.5" stroke-linecap="round"/>
+    <line x1="60" y1="107" x2="97" y2="107" stroke="rgba(255,255,255,0.75)" stroke-width="4.5" stroke-linecap="round"/>
+    <line x1="60" y1="124" x2="80" y2="124" stroke="rgba(255,255,255,0.75)" stroke-width="4.5" stroke-linecap="round"/>
+
+    <g transform="translate(118,88) rotate(-30)">
+      <rect x="0" y="0" width="8" height="42" rx="2" fill="white"/>
+      <polygon points="4,42 0,52 8,52" fill="#FFD233"/>
+      <polygon points="4,46 1.5,52 6.5,52" fill="#B8941A"/>
+      <rect x="6" y="4" width="3" height="26" rx="1.5" fill="rgba(200,220,255,0.7)"/>
+    </g>
+
+    <line x1="118" y1="97"  x2="160" y2="97"  stroke="rgba(255,255,255,0.75)" stroke-width="4.5" stroke-linecap="round"/>
+    <line x1="118" y1="113" x2="160" y2="113" stroke="#FFD233"               stroke-width="4.5" stroke-linecap="round"/>
+  </g>
+</svg>
