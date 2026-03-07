@@ -1,75 +1,44 @@
-/* 말씀필사 글로벌 CSS — TDS 컬러 토큰 */
+/* 말씀필사 글로벌 CSS — Toss Design System (TDS) Theme */
+
+@import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Primary */
+  /* Primary — Toss Blue */
   --color-primary: #3182F6;
   --color-primary-pressed: #1B64DA;
-  --color-primary-subtle: #EBF3FF;
+  --color-primary-subtle: #E8F3FF;
 
-  /* Background */
+  /* Accent — Toss Blue (identical for now, but semantically separated) */
+  --color-accent: #3182F6;
+  --color-accent-pressed: #1B64DA;
+  --color-accent-subtle: rgba(49, 130, 246, 0.1);
+
+  /* Background — Bright / White */
   --color-bg-primary: #FFFFFF;
-  --color-bg-secondary: #F9FAFB;
-  --color-bg-tertiary: #F2F4F6;
+  --color-bg-secondary: #F2F4F6;
+  --color-bg-tertiary: #E5E8EB;
 
   /* Text */
-  --color-text-primary: #191919;
+  --color-text-primary: #191F28;
   --color-text-secondary: #4E5968;
   --color-text-tertiary: #8B95A1;
-  --color-text-disabled: #C2C9D1;
-  --color-text-placeholder: rgba(0, 0, 0, 0.15);
+  --color-text-disabled: #B0B8C1;
+  --color-text-placeholder: #D1D6DB;
 
   /* Semantic */
-  --color-error: #FF3B30;
-  --color-success: #34C759;
-  --color-warning: #FF9500;
+  --color-error: #F04452;
+  --color-success: #3182F6; /* Toss uses Blue for success indicators often, or #04C09E (Green) */
+  --color-warning: #FF9F2E;
 
   /* Border */
-  --color-border: #E5E8EB;
-  --color-border-strong: #B0B8C1;
+  --color-border: #F2F4F6;
+  --color-border-strong: #E5E8EB;
 
   /* Typography */
-  --font-ui: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
-  --font-verse: 'Noto Serif KR', 'Georgia', serif;
+  --font-ui: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+  --font-verse: var(--font-ui); /* No more serif */
 }
 
-/* 다크 모드 */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-primary: #5A9FFF;
-    --color-primary-pressed: #3B82E0;
-    --color-primary-subtle: #1A2F4A;
-
-    --color-bg-primary: #131516;
-    --color-bg-secondary: #1E2122;
-    --color-bg-tertiary: #262C2E;
-
-    --color-text-primary: #F5F5F5;
-    --color-text-secondary: #8B95A1;
-    --color-text-tertiary: #5E6876;
-    --color-text-disabled: #3E4750;
-    --color-text-placeholder: rgba(255, 255, 255, 0.18);
-
-    --color-border: #2C3137;
-    --color-border-strong: #444C55;
-  }
-}
-
-/* 다크 모드 클래스 강제 적용 */
-.dark {
-  --color-primary: #5A9FFF;
-  --color-primary-pressed: #3B82E0;
-  --color-primary-subtle: #1A2F4A;
-  --color-bg-primary: #131516;
-  --color-bg-secondary: #1E2122;
-  --color-bg-tertiary: #262C2E;
-  --color-text-primary: #F5F5F5;
-  --color-text-secondary: #8B95A1;
-  --color-text-tertiary: #5E6876;
-  --color-text-disabled: #3E4750;
-  --color-text-placeholder: rgba(255, 255, 255, 0.18);
-  --color-border: #2C3137;
-  --color-border-strong: #444C55;
-}
 
 * {
   box-sizing: border-box;
@@ -114,24 +83,53 @@ a {
   text-decoration: none;
 }
 
-/* 타이포그래피 스케일 */
+/* ── 애니메이션 ── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.5s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s ease-out;
+}
+
+/* ── 타이포그래피 스케일 ── */
 .display-1 {
-  font-family: var(--font-verse);
-  font-size: 30px;
-  line-height: 1.7;
+  font-family: var(--font-ui);
+  font-size: 28px;
+  line-height: 1.4;
   letter-spacing: -0.3px;
-  font-weight: 400;
+  font-weight: 700;
 }
 
 .display-2 {
-  font-family: var(--font-verse);
-  font-size: 22px;
-  line-height: 1.6;
+  font-family: var(--font-ui);
+  font-size: 24px;
+  line-height: 1.5;
   letter-spacing: -0.2px;
-  font-weight: 400;
+  font-weight: 600;
 }
 
 .heading-1 {
+  font-family: var(--font-ui);
   font-size: 22px;
   line-height: 1.4;
   letter-spacing: -0.5px;
@@ -139,6 +137,7 @@ a {
 }
 
 .heading-2 {
+  font-family: var(--font-ui);
   font-size: 18px;
   line-height: 1.4;
   letter-spacing: -0.3px;
@@ -146,26 +145,31 @@ a {
 }
 
 .body-1 {
+  font-family: var(--font-ui);
   font-size: 16px;
   line-height: 1.5;
   letter-spacing: -0.2px;
-  font-weight: 400;
+  font-weight: 500;
 }
 
 .body-2 {
+  font-family: var(--font-ui);
   font-size: 14px;
   line-height: 1.5;
   font-weight: 400;
 }
 
 .caption {
+  font-family: var(--font-ui);
   font-size: 12px;
   line-height: 1.4;
   font-weight: 400;
+  color: var(--color-text-tertiary);
 }
 
 .label {
-  font-size: 16px;
+  font-family: var(--font-ui);
+  font-size: 15px;
   line-height: 1.0;
   letter-spacing: -0.2px;
   font-weight: 600;

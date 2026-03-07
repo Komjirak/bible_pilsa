@@ -25,17 +25,17 @@ const contentStyle: React.CSSProperties = {
 };
 
 const bannerStyle: React.CSSProperties = {
-  padding: '24px',
+  padding: '28px 24px',
   backgroundColor: 'var(--color-primary-subtle)',
-  borderRadius: '16px',
+  borderRadius: '24px',
   textAlign: 'center',
 };
 
 const sectionStyle: React.CSSProperties = {
   padding: '20px',
   backgroundColor: 'var(--color-bg-secondary)',
-  borderRadius: '16px',
-  border: '1px solid var(--color-border)',
+  borderRadius: '24px',
+  boxShadow: '0 2px 12px rgba(0, 0, 0, 0.04)',
 };
 
 const historyItemStyle: React.CSSProperties = {
@@ -49,10 +49,10 @@ const historyItemStyle: React.CSSProperties = {
 const statusBadgeStyle = (status: string): React.CSSProperties => ({
   fontSize: '12px',
   fontWeight: 600,
-  padding: '3px 8px',
+  padding: '3px 10px',
   borderRadius: '20px',
   backgroundColor:
-    status === 'completed' ? 'rgba(52, 199, 89, 0.15)' : 'rgba(142,142,147,0.15)',
+    status === 'completed' ? 'rgba(47, 133, 90, 0.12)' : 'rgba(139,143,150,0.12)',
   color: status === 'completed' ? 'var(--color-success)' : 'var(--color-text-tertiary)',
 });
 
@@ -77,13 +77,19 @@ export default function PointsPage() {
   return (
     <div style={pageStyle}>
       <AppNavBar title="포인트 현황" showBack />
-      <div style={contentStyle}>
+      <div style={contentStyle} className="animate-fade-in">
         {/* 총 포인트 배너 */}
         <div style={bannerStyle}>
           <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginBottom: '8px' }}>
             지금까지 모은 포인트
           </p>
-          <p style={{ fontSize: '40px', fontWeight: 700, color: 'var(--color-primary)', marginBottom: '6px' }}>
+          <p style={{
+            fontFamily: 'var(--font-ui)',
+            fontSize: '40px',
+            fontWeight: 700,
+            color: 'var(--color-primary)',
+            marginBottom: '6px',
+          }}>
             {totalEarned}원
           </p>
           <p style={{ fontSize: '13px', color: 'var(--color-text-tertiary)' }}>
@@ -104,8 +110,8 @@ export default function PointsPage() {
             <div style={{
               marginTop: '12px',
               padding: '8px 12px',
-              backgroundColor: 'rgba(52, 199, 89, 0.12)',
-              borderRadius: '8px',
+              backgroundColor: 'rgba(47, 133, 90, 0.08)',
+              borderRadius: '12px',
               fontSize: '13px',
               color: 'var(--color-success)',
               textAlign: 'center',

@@ -20,15 +20,16 @@ const pageStyle: React.CSSProperties = {
 
 const progressBarContainerStyle: React.CSSProperties = {
   height: '4px',
-  backgroundColor: 'var(--color-border)',
+  backgroundColor: 'var(--color-bg-tertiary)',
   width: '100%',
 };
 
 const verseHeaderStyle: React.CSSProperties = {
-  padding: '10px 24px 6px',
-  fontSize: '13px',
+  padding: '12px 24px 8px',
+  fontSize: '14px',
   color: 'var(--color-text-secondary)',
-  fontWeight: 500,
+  fontWeight: 600,
+  fontFamily: 'var(--font-ui)',
 };
 
 const canvasAreaStyle: React.CSSProperties = {
@@ -40,21 +41,21 @@ const canvasAreaStyle: React.CSSProperties = {
 
 const bottomBarStyle: React.CSSProperties = {
   padding: '12px 24px 16px',
-  borderTop: '1px solid var(--color-border)',
   backgroundColor: 'var(--color-bg-primary)',
 };
 
 const completeBtnStyle = (active: boolean): React.CSSProperties => ({
   width: '100%',
   height: '52px',
-  borderRadius: '14px',
-  backgroundColor: active ? 'var(--color-primary)' : 'var(--color-border)',
+  borderRadius: '24px',
+  backgroundColor: active ? 'var(--color-accent)' : 'var(--color-bg-tertiary)',
   color: active ? '#fff' : 'var(--color-text-disabled)',
   fontSize: '16px',
   fontWeight: 600,
   cursor: active ? 'pointer' : 'default',
   border: 'none',
   transition: 'all 0.2s',
+  boxShadow: active ? '0 4px 16px rgba(209, 92, 50, 0.2)' : 'none',
 });
 
 const toastStyle: React.CSSProperties = {
@@ -62,13 +63,14 @@ const toastStyle: React.CSSProperties = {
   bottom: '100px',
   left: '50%',
   transform: 'translateX(-50%)',
-  backgroundColor: 'rgba(0,0,0,0.8)',
+  backgroundColor: 'var(--color-primary)',
   color: '#fff',
   padding: '10px 20px',
-  borderRadius: '20px',
+  borderRadius: '24px',
   fontSize: '14px',
   whiteSpace: 'nowrap',
   zIndex: 500,
+  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
 };
 
 export default function WritingPage() {
@@ -125,7 +127,8 @@ export default function WritingPage() {
         typingStartAt: typingStartRef.current?.toISOString() ?? new Date().toISOString(),
         pasteAttempts,
         clientSimilarity: similarity,
-      });
+        verseRef: `${verse.book} ${verse.chapter}장 ${verse.verse}절`,
+      } as any);
 
       navigate('/completion', { state: { result, verse } });
     } catch {
@@ -159,8 +162,9 @@ export default function WritingPage() {
           style={{
             height: '100%',
             width: `${Math.min(progress * 100, 100)}%`,
-            backgroundColor: 'var(--color-primary)',
+            backgroundColor: 'var(--color-accent)',
             transition: 'width 0.1s',
+            borderRadius: '0 2px 2px 0',
           }}
         />
       </div>
@@ -193,7 +197,7 @@ export default function WritingPage() {
       </div>
 
       {/* 토스트 */}
-      {showToast && <div style={toastStyle}>{toastMessage}</div>}
+      {showToast && <div style={toastStyle} className="animate-fade-in">{toastMessage}</div>}
     </div>
   );
 }

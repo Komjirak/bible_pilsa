@@ -12,7 +12,6 @@ const navStyle: React.CSSProperties = {
   alignItems: 'center',
   height: '56px',
   padding: '0 16px',
-  borderBottom: '1px solid var(--color-border)',
   backgroundColor: 'var(--color-bg-primary)',
   position: 'sticky',
   top: 0,
@@ -36,7 +35,8 @@ const backBtnStyle: React.CSSProperties = {
 const titleStyle: React.CSSProperties = {
   flex: 1,
   textAlign: 'center',
-  fontSize: '18px',
+  fontFamily: 'var(--font-ui)', /* Toss DS typography */
+  fontSize: '17px',
   fontWeight: 600,
   color: 'var(--color-text-primary)',
   letterSpacing: '-0.3px',
@@ -47,7 +47,8 @@ const spacerStyle: React.CSSProperties = {
   flexShrink: 0,
 };
 
-export function AppNavBar({ title, showBack = false }: AppNavBarProps) {
+export function AppNavBar({ title }: AppNavBarProps) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const navigate = useNavigate();
 
   const handleBack = () => {
@@ -57,13 +58,7 @@ export function AppNavBar({ title, showBack = false }: AppNavBarProps) {
 
   return (
     <nav style={navStyle}>
-      {showBack ? (
-        <button style={backBtnStyle} onClick={handleBack} aria-label="뒤로 가기">
-          ‹
-        </button>
-      ) : (
-        <div style={spacerStyle} />
-      )}
+      <div style={spacerStyle} />
       <h1 style={titleStyle}>{title}</h1>
       <div style={spacerStyle} />
     </nav>

@@ -58,3 +58,8 @@ export interface ApiError {
   errorCode: string;
   message: string;
 }
+
+export interface UserSettingsResponse {
+  notificationEnabled: boolean;
+  notificationTime: string | null;
+}

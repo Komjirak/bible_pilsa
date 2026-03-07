@@ -36,17 +36,18 @@ const celebrationStyle: React.CSSProperties = {
 const adButtonStyle: React.CSSProperties = {
   width: '100%',
   height: '52px',
-  borderRadius: '14px',
+  borderRadius: '16px',
   backgroundColor: 'var(--color-bg-secondary)',
   color: 'var(--color-text-primary)',
   fontSize: '14px',
   fontWeight: 600,
   cursor: 'pointer',
-  border: '1px solid var(--color-border)',
+  border: 'none',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
   gap: '8px',
+  boxShadow: '0 1px 4px rgba(0, 0, 0, 0.04)',
 };
 
 const adButtonDisabledStyle: React.CSSProperties = {
@@ -59,8 +60,8 @@ const progressCardStyle: React.CSSProperties = {
   width: '100%',
   padding: '20px',
   backgroundColor: 'var(--color-bg-secondary)',
-  borderRadius: '16px',
-  border: '1px solid var(--color-border)',
+  borderRadius: '24px',
+  boxShadow: '0 2px 12px rgba(0, 0, 0, 0.04)',
 };
 
 const actionButtonsStyle: React.CSSProperties = {
@@ -72,7 +73,7 @@ const actionButtonsStyle: React.CSSProperties = {
 
 const primaryBtnStyle: React.CSSProperties = {
   height: '52px',
-  borderRadius: '14px',
+  borderRadius: '24px',
   backgroundColor: 'var(--color-primary)',
   color: '#fff',
   fontSize: '16px',
@@ -80,17 +81,18 @@ const primaryBtnStyle: React.CSSProperties = {
   cursor: 'pointer',
   border: 'none',
   width: '100%',
+  boxShadow: '0 4px 16px rgba(49, 130, 246, 0.2)',
 };
 
 const ghostBtnStyle: React.CSSProperties = {
   height: '52px',
-  borderRadius: '14px',
+  borderRadius: '24px',
   backgroundColor: 'transparent',
   color: 'var(--color-text-secondary)',
   fontSize: '16px',
   fontWeight: 500,
   cursor: 'pointer',
-  border: '1px solid var(--color-border)',
+  border: 'none',
   width: '100%',
 };
 
@@ -118,6 +120,14 @@ export default function CompletionPage() {
     return null;
   }
 
+  const handleGoHome = () => {
+    if (isAdLoaded) {
+      showAd(() => navigate('/'));
+    } else {
+      navigate('/');
+    }
+  };
+
   const weeklyStatus = {
     completedDays: Array(7).fill(false).map((_, i) => i < result.weekProgress.completed),
     completedCount: result.weekProgress.completed,
@@ -127,11 +137,17 @@ export default function CompletionPage() {
     <div style={pageStyle}>
       <AppNavBar title="오늘 완료!" />
 
-      <div style={contentStyle}>
+      <div style={contentStyle} className="animate-fade-in">
         {/* 축하 영역 */}
         <div style={celebrationStyle}>
           <div style={{ fontSize: '64px', marginBottom: '16px' }}>✅</div>
-          <h2 className="heading-1" style={{ marginBottom: '8px', color: 'var(--color-text-primary)' }}>
+          <h2 style={{
+            fontFamily: 'var(--font-ui)',
+            fontSize: '22px',
+            fontWeight: 700,
+            marginBottom: '8px',
+            color: 'var(--color-text-primary)',
+          }}>
             오늘 말씀 필사 완료!
           </h2>
           <p className="body-2" style={{ color: 'var(--color-text-secondary)' }}>
@@ -142,19 +158,24 @@ export default function CompletionPage() {
           </p>
         </div>
 
-        {/* 전면형 광고 버튼 (앱인토스 인앱 광고 2.0 ver2) */}
-        <button
-          style={isAdLoaded ? adButtonStyle : adButtonDisabledStyle}
-          onClick={() => isAdLoaded && showAd()}
-          disabled={!isAdLoaded}
-        >
-          <span>📺</span>
-          <span>{isAdLoaded ? '광고 보고 계속하기' : '광고 로딩 중...'}</span>
-        </button>
+        {/* 액션 버튼 */}
+        <div style={actionButtonsStyle}>
+          <button style={primaryBtnStyle} onClick={() => navigate('/points')}>
+            포인트 현황 보기
+          </button>
+          <button style={ghostBtnStyle} onClick={handleGoHome}>
+            홈으로
+          </button>
+        </div>
 
         {/* 주간 진행 현황 */}
         <div style={progressCardStyle}>
-          <h3 className="heading-2" style={{ marginBottom: '16px', color: 'var(--color-text-primary)' }}>
+          <h3 style={{
+            fontSize: '16px',
+            fontWeight: 600,
+            marginBottom: '16px',
+            color: 'var(--color-text-primary)',
+          }}>
             이번 주 진행 현황
           </h3>
           <WeeklyCalendarStrip
@@ -163,15 +184,7 @@ export default function CompletionPage() {
           />
         </div>
 
-        {/* 액션 버튼 */}
-        <div style={actionButtonsStyle}>
-          <button style={primaryBtnStyle} onClick={() => navigate('/points')}>
-            포인트 현황 보기
-          </button>
-          <button style={ghostBtnStyle} onClick={() => navigate('/')}>
-            홈으로
-          </button>
-        </div>
+
       </div>
 
       <CopyrightFooter />
@@ -186,4 +199,3 @@ export default function CompletionPage() {
     </div>
   );
 }
-

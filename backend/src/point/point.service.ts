@@ -10,16 +10,18 @@ export class PointService {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  // 7일 완주 포인트 지급 (토스 Point API, mTLS)
+  // 7일 완주 포인트 지급 (토스 executePromotion API)
   async grantWeeklyCompletePoint(userKey: string, weekStart: string): Promise<void> {
     const amount = Number(process.env.WEEKLY_COMPLETE_POINT_AMOUNT ?? 10);
-    const apiUrl = process.env.TOSS_POINT_API_URL;
-    const certPath = process.env.TOSS_POINT_CLIENT_CERT_PATH;
-    const keyPath = process.env.TOSS_POINT_CLIENT_KEY_PATH;
+    const promotionCode = process.env.TOSS_PROMOTION_CODE; // 발급받은 프로모션 코드
+    const apiKey = process.env.TOSS_PROMOTION_API_KEY; // 보상 지급 API Key
+    
+    // Toss executePromotion URL
+    const apiUrl = 'https://api.toss.im/api-partner/v1/apps-in-toss/promotion/execute-promotion';
 
-    if (!apiUrl || !certPath || !keyPath) {
+    if (!promotionCode || !apiKey) {
       // 개발 환경 — mock
-      this.logger.warn(`[point] mTLS env 미설정 — 포인트 지급 mock: userKey=${userKey} amount=${amount}`);
+      this.logger.warn(`[point] 프로모션 발급 환경변수 미설정 — 포인트 지급 mock: userKey=${userKey} amount=${amount}`);
       await this.prisma.pointTransaction.create({
         data: {
           userKey,
@@ -32,28 +34,42 @@ export class PointService {
       return;
     }
 
-    // mTLS 클라이언트 인증서 로드
-    const httpsAgent = new https.Agent({
-      cert: fs.readFileSync(certPath),
-      key: fs.readFileSync(keyPath),
-    });
+    // 중복 지급 방지용 고유 지급 키 (고유해야 함)
+    const rewardKey = `bp-reward-${userKey.slice(0, 8)}-${weekStart}`;
 
-    const orderId = `bp-${userKey.slice(0, 8)}-${weekStart}`;
-    const { data } = await axios.post(
-      apiUrl,
-      { userKey, orderId, amount, reason: 'weekly_complete_7days' },
-      { httpsAgent, timeout: 10000 },
-    );
+    try {
+      const { data } = await axios.post(
+        apiUrl,
+        { 
+          promotionCode, 
+          key: rewardKey, 
+          amount 
+        },
+        { 
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'x-toss-user-key': userKey,
+            'Content-Type': 'application/json',
+          },
+          timeout: 10000 
+        },
+      );
 
-    await this.prisma.pointTransaction.create({
-      data: {
-        userKey,
-        weekStart,
-        amount,
-        reason: 'weekly_complete_7days',
-        tossOrderId: data.orderId ?? orderId,
-      },
-    });
+      await this.prisma.pointTransaction.create({
+        data: {
+          userKey,
+          weekStart,
+          amount,
+          reason: 'weekly_complete_7days',
+          tossOrderId: rewardKey,
+        },
+      });
+
+      this.logger.log(`[point] executePromotion 성공: userKey=${userKey} rewardKey=${rewardKey}`);
+    } catch (err) {
+      this.logger.error(`[point] executePromotion 실패: userKey=${userKey}`, err?.response?.data || err?.message);
+      throw err;
+    }
   }
 
   async getPointHistory(userKey: string) {

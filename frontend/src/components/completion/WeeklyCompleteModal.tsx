@@ -8,7 +8,7 @@ interface WeeklyCompleteModalProps {
 const overlayStyle: React.CSSProperties = {
   position: 'fixed',
   inset: 0,
-  backgroundColor: 'rgba(0,0,0,0.6)',
+  backgroundColor: 'rgba(0,0,0,0.5)',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -18,11 +18,12 @@ const overlayStyle: React.CSSProperties = {
 
 const modalStyle: React.CSSProperties = {
   backgroundColor: 'var(--color-bg-primary)',
-  borderRadius: '20px',
-  padding: '32px 24px',
+  borderRadius: '24px',
+  padding: '36px 28px',
   textAlign: 'center',
   width: '100%',
   maxWidth: '320px',
+  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
 };
 
 const emojiStyle: React.CSSProperties = {
@@ -32,6 +33,7 @@ const emojiStyle: React.CSSProperties = {
 };
 
 const titleStyle: React.CSSProperties = {
+  fontFamily: 'var(--font-verse)',
   fontSize: '22px',
   fontWeight: 700,
   color: 'var(--color-text-primary)',
@@ -42,30 +44,31 @@ const bodyStyle: React.CSSProperties = {
   fontSize: '15px',
   color: 'var(--color-text-secondary)',
   lineHeight: 1.6,
-  marginBottom: '24px',
+  marginBottom: '28px',
 };
 
 const pointStyle: React.CSSProperties = {
-  color: 'var(--color-primary)',
+  color: 'var(--color-accent)',
   fontWeight: 700,
 };
 
 const btnStyle: React.CSSProperties = {
   width: '100%',
   height: '52px',
-  borderRadius: '12px',
-  backgroundColor: 'var(--color-primary)',
+  borderRadius: '16px',
+  backgroundColor: 'var(--color-accent)',
   color: '#fff',
   fontSize: '16px',
   fontWeight: 600,
   cursor: 'pointer',
   border: 'none',
+  transition: 'background-color 0.15s',
 };
 
 export function WeeklyCompleteModal({ pointAmount, onClose }: WeeklyCompleteModalProps) {
   return (
     <div style={overlayStyle} onClick={onClose}>
-      <div style={modalStyle} onClick={(e) => e.stopPropagation()}>
+      <div style={modalStyle} className="animate-scale-in" onClick={(e) => e.stopPropagation()}>
         <span style={emojiStyle}>🎉</span>
         <h2 style={titleStyle}>이번 주 완주!</h2>
         <p style={bodyStyle}>

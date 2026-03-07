@@ -12,6 +12,9 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 const TEST_INTERSTITIAL_AD_GROUP_ID = 'ait-ad-test-interstitial-id';
 const TEST_REWARDED_AD_GROUP_ID = 'ait-ad-test-rewarded-id';
 
+// 실제 사용 환경용 상수
+const LIVE_INTERSTITIAL_AD_GROUP_ID = 'ait.v2.live.6255b174cfea47ca';
+
 // SDK 함수 타입 (런타임에만 존재)
 type LoadFullScreenAdFn = ((params: {
   options: { adGroupId: string };
@@ -33,7 +36,7 @@ interface UseFullScreenAdOptions {
 interface UseFullScreenAdReturn {
   isAdLoaded: boolean;
   isSupported: boolean;
-  showAd: () => void;
+  showAd: (onAdClosed?: () => void) => void;
   loadAd: () => void;
   adError: string | null;
 }
@@ -48,7 +51,9 @@ export function useFullScreenAd(options: UseFullScreenAdOptions = {}): UseFullSc
   const showFnRef = useRef<ShowFullScreenAdFn | null>(null);
   const unregisterRef = useRef<(() => void) | null>(null);
 
-  const adGroupId = adType === 'rewarded' ? TEST_REWARDED_AD_GROUP_ID : TEST_INTERSTITIAL_AD_GROUP_ID;
+  // 운영용 ID로 교체
+  let adGroupId = LIVE_INTERSTITIAL_AD_GROUP_ID;
+  if (adType === 'rewarded') adGroupId = TEST_REWARDED_AD_GROUP_ID;
 
   // SDK 동적 로드
   useEffect(() => {
@@ -117,12 +122,13 @@ export function useFullScreenAd(options: UseFullScreenAdOptions = {}): UseFullSc
   }, []);
 
   // 광고 표시
-  const showAd = useCallback(() => {
+  const showAd = useCallback((onAdClosed?: () => void) => {
     const showFn = showFnRef.current;
     if (!showFn) {
       // SDK 미사용 환경에서는 mock으로 동작
       console.warn('[ad] mock — 광고 표시 시뮬레이션');
       setIsAdLoaded(false);
+      onAdClosed?.();
       return;
     }
 
@@ -145,12 +151,14 @@ export function useFullScreenAd(options: UseFullScreenAdOptions = {}): UseFullSc
           case 'dismissed':
             console.log('[ad] 광고 닫힘');
             setIsAdLoaded(false);
+            onAdClosed?.();
             // 다음 광고 미리 로드 (load → show → load 패턴)
             loadAd();
             break;
           case 'failedToShow':
             console.error('[ad] 광고 표시 실패');
             setAdError('광고 표시 실패');
+            onAdClosed?.();
             break;
           case 'userEarnedReward':
             console.log('[ad] 리워드 획득:', event.data);

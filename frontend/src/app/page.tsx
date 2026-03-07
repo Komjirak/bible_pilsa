@@ -5,6 +5,7 @@ import { AppNavBar } from '@/components/global/AppNavBar';
 import { CopyrightFooter } from '@/components/global/CopyrightFooter';
 import { TodayVerseCard } from '@/components/home/TodayVerseCard';
 import { WeeklyCalendarStrip } from '@/components/home/WeeklyCalendarStrip';
+import { BannerAd } from '@/components/ads/BannerAd';
 import { useAuth } from '@/hooks/useAuth';
 import { useDailyVerse } from '@/hooks/useDailyVerse';
 import { useWeeklyStatus } from '@/hooks/useWeeklyStatus';
@@ -29,29 +30,31 @@ const contentStyle: React.CSSProperties = {
 const ctaBtnStyle: React.CSSProperties = {
   margin: '0 24px',
   height: '56px',
-  borderRadius: '14px',
-  backgroundColor: 'var(--color-primary)',
+  borderRadius: '24px',
+  backgroundColor: 'var(--color-accent)',
   color: '#fff',
   fontSize: '17px',
   fontWeight: 600,
   cursor: 'pointer',
   border: 'none',
   letterSpacing: '-0.3px',
-  transition: 'background-color 0.15s',
+  transition: 'background-color 0.15s, transform 0.1s',
+  boxShadow: '0 4px 16px rgba(209, 92, 50, 0.2)',
 };
 
 const alreadyDoneCardStyle: React.CSSProperties = {
   margin: '0 24px',
-  padding: '20px',
+  padding: '24px',
   backgroundColor: 'var(--color-bg-secondary)',
-  borderRadius: '14px',
-  border: '1px solid var(--color-border)',
+  borderRadius: '24px',
+  boxShadow: '0 2px 12px rgba(0, 0, 0, 0.04)',
   textAlign: 'center',
 };
 
 const loginBtnStyle: React.CSSProperties = {
   ...ctaBtnStyle,
-  backgroundColor: 'var(--color-primary)',
+  margin: '0',
+  width: '100%',
 };
 
 export default function HomePage() {
@@ -69,12 +72,23 @@ export default function HomePage() {
       <div style={pageStyle}>
         <AppNavBar title="말씀필사" />
         <div style={{ ...contentStyle, alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ textAlign: 'center', padding: '0 24px' }}>
+          <div style={{ textAlign: 'center', padding: '0 24px' }} className="animate-fade-in">
             <p style={{ fontSize: '48px', marginBottom: '16px' }}>📖</p>
-            <h2 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '8px', color: 'var(--color-text-primary)' }}>
+            <h2 style={{
+              fontFamily: 'var(--font-verse)',
+              fontSize: '24px',
+              fontWeight: 700,
+              marginBottom: '8px',
+              color: 'var(--color-text-primary)',
+            }}>
               말씀필사
             </h2>
-            <p style={{ fontSize: '15px', color: 'var(--color-text-secondary)', marginBottom: '32px', lineHeight: 1.6 }}>
+            <p style={{
+              fontSize: '15px',
+              color: 'var(--color-text-secondary)',
+              marginBottom: '32px',
+              lineHeight: 1.6,
+            }}>
               하루 한 절, 성경 말씀을 직접 써보세요.
             </p>
             <button
@@ -109,9 +123,15 @@ export default function HomePage() {
         />
 
         {isTodayCompleted ? (
-          <div style={alreadyDoneCardStyle}>
+          <div style={alreadyDoneCardStyle} className="animate-slide-up">
             <p style={{ fontSize: '24px', marginBottom: '8px' }}>✅</p>
-            <p style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: '6px' }}>
+            <p style={{
+              fontFamily: 'var(--font-verse)',
+              fontSize: '16px',
+              fontWeight: 600,
+              color: 'var(--color-text-primary)',
+              marginBottom: '6px',
+            }}>
               오늘 말씀 완료!
             </p>
             <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)' }}>
@@ -124,18 +144,24 @@ export default function HomePage() {
           </button>
         )}
 
+        {/* 하단 배너 광고 */}
+        <div style={{ padding: '0 24px' }}>
+          <BannerAd adUnitId="ait.v2.live.ae8e04b2200544f5" />
+        </div>
+
         <div style={{ display: 'flex', gap: '12px', padding: '0 24px' }}>
           <button
             style={{
               flex: 1,
               height: '48px',
-              borderRadius: '12px',
-              border: '1px solid var(--color-border)',
+              borderRadius: '16px',
+              border: 'none',
               backgroundColor: 'var(--color-bg-secondary)',
               color: 'var(--color-text-secondary)',
               fontSize: '14px',
               fontWeight: 500,
               cursor: 'pointer',
+              boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
             }}
             onClick={() => navigate('/points')}
           >
@@ -145,13 +171,14 @@ export default function HomePage() {
             style={{
               flex: 1,
               height: '48px',
-              borderRadius: '12px',
-              border: '1px solid var(--color-border)',
+              borderRadius: '16px',
+              border: 'none',
               backgroundColor: 'var(--color-bg-secondary)',
               color: 'var(--color-text-secondary)',
               fontSize: '14px',
               fontWeight: 500,
               cursor: 'pointer',
+              boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
             }}
             onClick={() => { refetch(); navigate('/settings'); }}
           >

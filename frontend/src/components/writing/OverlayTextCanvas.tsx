@@ -66,12 +66,13 @@ export function OverlayTextCanvas({
     flex: 1,
     cursor: 'text',
     wordBreak: 'keep-all',
-    fontFamily: 'var(--font-verse)',
+    fontFamily: 'var(--font-ui)', // Toss DS typography
     fontSize: `${fontSize}px`,
-    lineHeight: 1.7,
+    lineHeight: 1.6, // Tighter leading for sans-serif
     letterSpacing: '-0.3px',
     userSelect: 'none',
     WebkitUserSelect: 'none',
+    backgroundColor: 'var(--color-bg-primary)', // White background
   };
 
   const hiddenInputStyle: React.CSSProperties = {
@@ -86,7 +87,12 @@ export function OverlayTextCanvas({
   };
 
   return (
-    <div style={canvasStyle} onClick={handleTap} role="textbox" aria-label="필사 입력 영역">
+    <div
+      style={canvasStyle}
+      onClick={handleTap}
+      role="textbox"
+      aria-label="필사 입력 영역"
+    >
       {/* 숨겨진 실제 입력 영역 */}
       <textarea
         ref={hiddenInputRef}
@@ -110,16 +116,16 @@ export function OverlayTextCanvas({
           const isError = isTyped && !correctness[idx];
 
           let color: string;
-          let opacity = 1;
+          let fontWeight: number | undefined;
 
           if (isCorrect) {
             color = 'var(--color-text-primary)';
+            fontWeight = 600; // A bit stronger correct text
           } else if (isError) {
             color = 'var(--color-error)';
           } else {
             // 가이드 글자 (미입력)
             color = 'var(--color-text-placeholder)';
-            opacity = 1;
           }
 
           return (
@@ -127,9 +133,9 @@ export function OverlayTextCanvas({
               key={idx}
               style={{
                 color,
-                opacity,
+                fontWeight,
                 position: 'relative',
-                transition: 'color 0.1s',
+                transition: 'color 0.15s ease',
               }}
             >
               {char}

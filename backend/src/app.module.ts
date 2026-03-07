@@ -6,6 +6,8 @@ import { DailyVerseModule } from './daily-verse/daily-verse.module';
 import { CompletionModule } from './completion/completion.module';
 import { WeeklyChallengeModule } from './weekly-challenge/weekly-challenge.module';
 import { PointModule } from './point/point.module';
+import { UserModule } from './user/user.module';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { PointModule } from './point/point.module';
     CompletionModule,
     WeeklyChallengeModule,
     PointModule,
+    UserModule,
+    NotificationModule,
   ],
 })
 export class AppModule {}

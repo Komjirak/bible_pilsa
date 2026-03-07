@@ -1,12 +1,12 @@
 // Prisma schema — Bible Pilsa (말씀필사)
-// DB: PostgreSQL
+// DB: SQLite (local dev) / PostgreSQL (production)
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -14,14 +14,14 @@ datasource db {
 model User {
   id        Int      @id @default(autoincrement())
   userKey   String   @unique                    // 토스 OAuth2 userKey
+  notificationEnabled Boolean @default(false)
+  notificationTime    String?  // "HH:mm" 형식 (예: "06:00")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   completions      CompletionRecord[]
   weeklyChallenges WeeklyChallenge[]
   pointTransactions PointTransaction[]
-
-  @@index([userKey])
 }
 
 // 일별 필사 완료 기록
@@ -36,7 +36,6 @@ model CompletionRecord {
   user User @relation(fields: [userKey], references: [userKey])
 
   @@unique([userKey, date])            // 하루 1회만 허용 (Fraud 방지)
-  @@index([userKey, date])
 }
 
 // 주간 챌린지 상태 (월~일 KST 기준)
@@ -52,7 +51,6 @@ model WeeklyChallenge {
   user User @relation(fields: [userKey], references: [userKey])
 
   @@unique([userKey, weekStart])       // 주별 1개만 존재
-  @@index([userKey, weekStart])
 }
 
 // 포인트 트랜잭션 이력
@@ -68,5 +66,4 @@ model PointTransaction {
   user User @relation(fields: [userKey], references: [userKey])
 
   @@unique([userKey, weekStart])       // 주별 중복 지급 방지
-  @@index([userKey])
 }

@@ -61,7 +61,7 @@ function DayIndicator({
       <div
         style={{
           ...base,
-          backgroundColor: 'var(--color-primary)',
+          backgroundColor: 'var(--color-primary)', // Toss Blue
           color: '#fff',
         }}
       >
@@ -75,7 +75,7 @@ function DayIndicator({
       <div
         style={{
           ...base,
-          border: '2px solid var(--color-primary)',
+          border: '2px solid var(--color-primary)', // Toss Blue
           color: 'var(--color-primary)',
         }}
       />
@@ -86,7 +86,7 @@ function DayIndicator({
     <div
       style={{
         ...base,
-        border: '1.5px solid var(--color-border)',
+        border: '1.5px solid var(--color-border-strong)', // Subtle border
         color: 'var(--color-text-disabled)',
       }}
     />
