@@ -209,7 +209,7 @@ export default function WritingPage() {
           onClick={handleComplete}
           disabled={!isActive || isSubmitting}
         >
-          {isSubmitting ? '제출 중...' : '완료'}
+          {isSubmitting ? '제출 중...' : '광고 시청하고 포인트 받기'}
         </button>
       </div>
 

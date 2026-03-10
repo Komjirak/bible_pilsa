@@ -9,11 +9,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
 // 테스트 광고 ID (출시 전 반드시 실제 ID로 교체 필요)
-const TEST_INTERSTITIAL_AD_GROUP_ID = 'ait-ad-test-interstitial-id';
-const TEST_REWARDED_AD_GROUP_ID = 'ait-ad-test-rewarded-id';
-
 // 실제 사용 환경용 상수
 const LIVE_INTERSTITIAL_AD_GROUP_ID = 'ait.v2.live.6255b174cfea47ca';
+const LIVE_REWARDED_AD_GROUP_ID = 'ait.v2.live.6255b174cfea47ca'; // 전면형과 동일하게 사용 (요건에 따라)
 
 // SDK 함수 타입 (런타임에만 존재)
 type LoadFullScreenAdFn = ((params: {
@@ -53,7 +51,7 @@ export function useFullScreenAd(options: UseFullScreenAdOptions = {}): UseFullSc
 
   // 운영용 ID로 교체
   let adGroupId = LIVE_INTERSTITIAL_AD_GROUP_ID;
-  if (adType === 'rewarded') adGroupId = TEST_REWARDED_AD_GROUP_ID;
+  if (adType === 'rewarded') adGroupId = LIVE_REWARDED_AD_GROUP_ID;
 
   // SDK 동적 로드
   useEffect(() => {

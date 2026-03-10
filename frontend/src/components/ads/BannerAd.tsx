@@ -11,7 +11,10 @@ export function BannerAd({ adUnitId }: BannerAdProps) {
   useEffect(() => {
     if (!containerRef.current || attachedRef.current) return;
 
-    async function attachAd() {
+    async function attachAd(retryCount = 0) {
+      // 300ms 딜레이 부여 (SDK/DOM 준비 대기)
+      await new Promise(resolve => setTimeout(resolve, 300));
+
       try {
         let TossAds: any;
         
@@ -38,10 +41,16 @@ export function BannerAd({ adUnitId }: BannerAdProps) {
           attachedRef.current = true;
           console.log('[BannerAd] 부착 성공', adUnitId);
         } else {
-          console.warn('[BannerAd] TossAds 객체를 찾을 수 없습니다.');
+          console.warn('[BannerAd] TossAds 객체를 찾을 수 없습니다. (재시도:', retryCount, ')');
+          if (retryCount < 3) {
+            setTimeout(() => attachAd(retryCount + 1), 1000);
+          }
         }
       } catch (err) {
         console.warn('[BannerAd] 배너 광고 부착 실패', err);
+        if (retryCount < 2) {
+          setTimeout(() => attachAd(retryCount + 1), 2000);
+        }
       }
     }
 
