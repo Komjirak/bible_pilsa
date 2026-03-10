@@ -51,4 +51,25 @@ export class DailyVerseService {
       verseRef: `${verse.book} ${verse.chapter}장 ${verse.verse}절`,
     };
   }
+
+  getVerseByIndex(index: number) {
+    const pool = getVersePool();
+    // bounds check
+    let safeIndex = index;
+    if (isNaN(safeIndex) || safeIndex < 0) safeIndex = 0;
+    if (safeIndex >= pool.length) safeIndex = pool.length - 1;
+
+    const verse = pool[safeIndex];
+
+    return {
+      index: safeIndex,
+      total: pool.length,
+      book: verse.book,
+      chapter: verse.chapter,
+      verse: verse.verse,
+      text: verse.text,
+      charCount: verse.text.replace(/\s/g, '').length,
+      verseRef: `${verse.book} ${verse.chapter}장 ${verse.verse}절`,
+    };
+  }
 }

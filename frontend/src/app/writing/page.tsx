@@ -5,10 +5,13 @@ import { AppNavBar } from '@/components/global/AppNavBar';
 import { CopyrightFooter } from '@/components/global/CopyrightFooter';
 import { OverlayTextCanvas } from '@/components/writing/OverlayTextCanvas';
 import { useDailyVerse } from '@/hooks/useDailyVerse';
+import { useSequentialVerse, SEQUENTIAL_INDEX_KEY } from '@/hooks/useSequentialVerse';
 import { useAuth } from '@/hooks/useAuth';
 import { calculateSimilarity, isSimilarityPassed } from '@/lib/similarity';
 import { submitCompletion } from '@/lib/api';
 import { getTodayKST } from '@/lib/dateUtils';
+import { getSavedFontSize } from '@/app/settings/page';
+import { BIBLE_MODE_KEY } from '@/app/page';
 
 const pageStyle: React.CSSProperties = {
   display: 'flex',
@@ -76,7 +79,15 @@ const toastStyle: React.CSSProperties = {
 export default function WritingPage() {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
-  const { verse } = useDailyVerse(isLoggedIn);
+  
+  const [mode] = useState<'random' | 'sequential'>(() => {
+    return (localStorage.getItem(BIBLE_MODE_KEY) as 'random' | 'sequential') || 'random';
+  });
+
+  const { verse: dailyVerse } = useDailyVerse(isLoggedIn);
+  const { verse: seqVerse } = useSequentialVerse();
+  
+  const verse = mode === 'random' ? dailyVerse : seqVerse;
 
   const [inputText, setInputText] = useState('');
   const [pasteAttempts, setPasteAttempts] = useState(0);
@@ -130,7 +141,12 @@ export default function WritingPage() {
         verseRef: `${verse.book} ${verse.chapter}장 ${verse.verse}절`,
       } as any);
 
-      navigate('/completion', { state: { result, verse } });
+      if (mode === 'sequential') {
+        const currentIndex = parseInt(localStorage.getItem(SEQUENTIAL_INDEX_KEY) || '0', 10);
+        localStorage.setItem(SEQUENTIAL_INDEX_KEY, (currentIndex + 1).toString());
+      }
+
+      navigate('/completion', { state: { result, verse, mode } });
     } catch {
       showToastMessage('완료 처리 중 오류가 발생했어요. 다시 시도해주세요.');
     } finally {
@@ -181,6 +197,7 @@ export default function WritingPage() {
           inputText={inputText}
           onInputChange={handleInputChange}
           onPasteAttempt={handlePasteAttempt}
+          fontSize={getSavedFontSize()}
         />
         <CopyrightFooter />
       </div>

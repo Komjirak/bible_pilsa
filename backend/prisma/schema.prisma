@@ -16,6 +16,7 @@ model User {
   userKey   String   @unique                    // 토스 OAuth2 userKey
   notificationEnabled Boolean @default(false)
   notificationTime    String?  // "HH:mm" 형식 (예: "06:00")
+  fontSize            String?  // "small", "medium", "large"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

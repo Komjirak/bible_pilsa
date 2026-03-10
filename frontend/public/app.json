@@ -1,7 +1,20 @@
 {
-  "appName": "komjirak-bible",
+  "name": "komjirak-bible",
+  "deploymentId": "komjirak-bible",
+  "developmentId": "komjirak-bible",
+  "navigationBar": {
+    "title": "말씀필사",
+    "rightButton": {
+      "type": "icon",
+      "name": "more",
+      "action": "custom-action"
+    }
+  },
   "version": "1.0.0",
-  "name": "말씀필사",
-  "description": "하루 한 절 성경 필사 서비스",
-  "deploymentId": ""
+  "displayName": "말씀필사",
+  "startUrl": "index.html",
+  "development": {
+    "homeUrl": "http://localhost:5173",
+    "url": "http://localhost:5173"
+  }
 }

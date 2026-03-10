@@ -1,54 +1,69 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 interface BannerAdProps {
   adUnitId: string;
 }
 
 export function BannerAd({ adUnitId }: BannerAdProps) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [AdComponent, setAdComponent] = useState<any>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const attachedRef = useRef(false);
 
   useEffect(() => {
-    async function loadSdk() {
+    if (!containerRef.current || attachedRef.current) return;
+
+    async function attachAd() {
       try {
-        // @apps-in-toss/web-framework의 AdBanner 동적 임포트
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const sdk: any = await import(/* @vite-ignore */ '@apps-in-toss/web-framework').catch(() => null);
+        let TossAds: any;
         
-        if (sdk && sdk.AdBanner) {
-          setAdComponent(() => sdk.AdBanner);
+        // 1. Framework import 시도
+        try {
+          const sdk: any = await import(/* @vite-ignore */ '@apps-in-toss/web-framework');
+          if (sdk && sdk.TossAds) {
+            TossAds = sdk.TossAds;
+          }
+        } catch (e) {
+          // ignore
+        }
+
+        // 2. window 객체에서 Fallback 찾기
+        if (!TossAds && window && (window as any).TossAds) {
+          TossAds = (window as any).TossAds;
+        }
+
+        if (TossAds && typeof TossAds.attachBanner === 'function') {
+          await TossAds.attachBanner({
+            adUnitId,
+            element: containerRef.current!,
+          });
+          attachedRef.current = true;
+          console.log('[BannerAd] 부착 성공', adUnitId);
         } else {
-          console.warn('[BannerAd] AdBanner 컴포넌트 로드 실패 (SDK 미포함 환경)');
+          console.warn('[BannerAd] TossAds 객체를 찾을 수 없습니다.');
         }
       } catch (err) {
-        console.warn('[BannerAd] AdBanner 임포트 중 에러 발생', err);
+        console.warn('[BannerAd] 배너 광고 부착 실패', err);
       }
     }
-    loadSdk();
-  }, []);
 
-  if (!AdComponent) {
-    // 개발 환경 / PC 브라우저 등 SDK가 없을 때의 mock 뷰
-    return (
-      <div style={{
+    attachAd();
+  }, [adUnitId]);
+
+  return (
+    <div
+      ref={containerRef}
+      style={{
         width: '100%',
         minHeight: '70px',
         backgroundColor: 'var(--color-bg-secondary)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        margin: '16px 0',
         borderRadius: '12px',
         color: 'var(--color-text-tertiary)',
         fontSize: '14px',
-        fontWeight: 500,
-        boxShadow: '0 1px 4px rgba(0,0,0,0.02)',
-      }}>
-        Toss Ad Banner Area
-      </div>
-    );
-  }
-
-  // 실제 SDK 컴포넌트 렌더링
-  return <AdComponent adUnitId={adUnitId} />;
+        overflow: 'hidden',
+      }}
+      data-ad-unit-id={adUnitId}
+    />
+  );
 }

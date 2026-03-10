@@ -62,4 +62,5 @@ export interface ApiError {
 export interface UserSettingsResponse {
   notificationEnabled: boolean;
   notificationTime: string | null;
+  fontSize: string | null;
 }

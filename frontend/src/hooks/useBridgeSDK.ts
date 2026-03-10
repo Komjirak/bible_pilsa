@@ -1,24 +1,12 @@
 import { useEffect, useState } from 'react';
-import { initBridge, getColorMode } from '@/lib/toss-bridge';
 
 export function useBridgeSDK() {
   const [initialized, setInitialized] = useState(false);
-  const [colorMode, setColorMode] = useState<'light' | 'dark'>('dark');
+  const [colorMode] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
-    let cancelled = false;
-
-    async function init() {
-      await initBridge();
-      const mode = await getColorMode();
-      if (!cancelled) {
-        setColorMode(mode);
-        setInitialized(true);
-      }
-    }
-
-    init();
-    return () => { cancelled = true; };
+    // SDK 2.0.1에서는 별도 초기화 불필요 — 토스 앱 컨테이너가 자동 처리
+    setInitialized(true);
   }, []);
 
   return { initialized, colorMode };

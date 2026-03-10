@@ -8,7 +8,9 @@ import { WeeklyCalendarStrip } from '@/components/home/WeeklyCalendarStrip';
 import { BannerAd } from '@/components/ads/BannerAd';
 import { useAuth } from '@/hooks/useAuth';
 import { useDailyVerse } from '@/hooks/useDailyVerse';
+import { useSequentialVerse } from '@/hooks/useSequentialVerse';
 import { useWeeklyStatus } from '@/hooks/useWeeklyStatus';
+import { SequentialProgress } from '@/components/home/SequentialProgress';
 import { getCountdownToMidnight } from '@/lib/dateUtils';
 
 const pageStyle: React.CSSProperties = {
@@ -57,11 +59,28 @@ const loginBtnStyle: React.CSSProperties = {
   width: '100%',
 };
 
+export const BIBLE_MODE_KEY = 'bible-pilsa-mode';
+type BibleMode = 'random' | 'sequential';
+
 export default function HomePage() {
   const navigate = useNavigate();
   const { isLoggedIn, isLoading: authLoading, login } = useAuth();
-  const { verse, isLoading: verseLoading } = useDailyVerse(isLoggedIn);
+  
+  // 랜덤 모드 (오늘의 말씀)
+  const { verse: dailyVerse, isLoading: dailyLoading } = useDailyVerse(isLoggedIn);
+  // 순서대로 모드
+  const { verse: seqVerse, isLoading: seqLoading, resetProgress } = useSequentialVerse();
+  
   const { status, isTodayCompleted, refetch } = useWeeklyStatus(isLoggedIn);
+
+  const [mode, setMode] = React.useState<BibleMode>(() => {
+    return (localStorage.getItem(BIBLE_MODE_KEY) as BibleMode) || 'random';
+  });
+
+  const handleModeChange = (newMode: BibleMode) => {
+    setMode(newMode);
+    localStorage.setItem(BIBLE_MODE_KEY, newMode);
+  };
 
   const handleStartWriting = () => {
     navigate('/writing');
@@ -109,20 +128,67 @@ export default function HomePage() {
     <div style={pageStyle}>
       <AppNavBar title="말씀필사" />
       <div style={contentStyle}>
-        {verseLoading || !verse ? (
-          <div style={{ padding: '24px', textAlign: 'center', color: 'var(--color-text-tertiary)' }}>
-            말씀을 불러오는 중...
+        {/* 모드 선택 */}
+        <div style={{ padding: '0 24px', display: 'flex', justifyContent: 'center' }}>
+          <div style={{
+            display: 'flex', backgroundColor: 'var(--color-bg-secondary)', 
+            borderRadius: '20px', padding: '4px', gap: '4px', width: '100%'
+          }}>
+            <button
+              style={{
+                flex: 1, padding: '10px 0', borderRadius: '16px',
+                backgroundColor: mode === 'random' ? 'var(--color-bg-primary)' : 'transparent',
+                color: mode === 'random' ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
+                fontWeight: mode === 'random' ? 700 : 500,
+                boxShadow: mode === 'random' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
+              }}
+              onClick={() => handleModeChange('random')}
+            >
+              오늘의 말씀
+            </button>
+            <button
+              style={{
+                flex: 1, padding: '10px 0', borderRadius: '16px',
+                backgroundColor: mode === 'sequential' ? 'var(--color-bg-primary)' : 'transparent',
+                color: mode === 'sequential' ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
+                fontWeight: mode === 'sequential' ? 700 : 500,
+                boxShadow: mode === 'sequential' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
+              }}
+              onClick={() => handleModeChange('sequential')}
+            >
+              순서대로
+            </button>
           </div>
+        </div>
+
+        {mode === 'random' ? (
+          dailyLoading || !dailyVerse ? (
+            <div style={{ padding: '24px', textAlign: 'center', color: 'var(--color-text-tertiary)' }}>
+              말씀을 불러오는 중...
+            </div>
+          ) : (
+            <TodayVerseCard verse={dailyVerse} />
+          )
         ) : (
-          <TodayVerseCard verse={verse} />
+          <SequentialProgress 
+            verse={seqVerse} 
+            isLoading={seqLoading} 
+            onReset={() => {
+              if (confirm('순서대로 필사 진도를 초기화하시겠습니까?')) {
+                resetProgress();
+              }
+            }} 
+          />
         )}
 
-        <WeeklyCalendarStrip
-          completedDays={status?.completedDays ?? Array(7).fill(false)}
-          completedCount={status?.completedCount ?? 0}
-        />
+        {mode === 'random' && (
+          <WeeklyCalendarStrip
+            completedDays={status?.completedDays ?? Array(7).fill(false)}
+            completedCount={status?.completedCount ?? 0}
+          />
+        )}
 
-        {isTodayCompleted ? (
+        {(mode === 'random' && isTodayCompleted) ? (
           <div style={alreadyDoneCardStyle} className="animate-slide-up">
             <p style={{ fontSize: '24px', marginBottom: '8px' }}>✅</p>
             <p style={{

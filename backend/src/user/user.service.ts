@@ -8,7 +8,7 @@ export class UserService {
   async getUserSettings(userKey: string) {
     const user = await this.prisma.user.findUnique({
       where: { userKey },
-      select: { notificationEnabled: true, notificationTime: true },
+      select: { notificationEnabled: true, notificationTime: true, fontSize: true },
     });
 
     if (!user) {
@@ -20,18 +20,19 @@ export class UserService {
 
   async updateNotificationSettings(
     userKey: string,
-    enabled: boolean,
+    enabled?: boolean,
     time?: string,
+    fontSize?: string,
   ) {
-    const data: any = { notificationEnabled: enabled };
-    if (time !== undefined) {
-      data.notificationTime = time;
-    }
+    const data: any = {};
+    if (enabled !== undefined) data.notificationEnabled = enabled;
+    if (time !== undefined) data.notificationTime = time;
+    if (fontSize !== undefined) data.fontSize = fontSize;
 
     const user = await this.prisma.user.update({
       where: { userKey },
       data,
-      select: { notificationEnabled: true, notificationTime: true },
+      select: { notificationEnabled: true, notificationTime: true, fontSize: true },
     });
 
     return user;

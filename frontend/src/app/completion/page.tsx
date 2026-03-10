@@ -11,6 +11,7 @@ import type { CompleteResponse, DailyVerseResponse } from '@/types/api';
 interface LocationState {
   result: CompleteResponse;
   verse: DailyVerseResponse;
+  mode?: 'random' | 'sequential';
 }
 
 const pageStyle: React.CSSProperties = {
@@ -106,6 +107,7 @@ export default function CompletionPage() {
 
   const result = state?.result;
   const verse = state?.verse;
+  const mode = state?.mode || 'random';
 
   useEffect(() => {
     if (result?.weeklyComplete) {
@@ -135,7 +137,7 @@ export default function CompletionPage() {
 
   return (
     <div style={pageStyle}>
-      <AppNavBar title="오늘 완료!" />
+      <AppNavBar title={mode === 'random' ? "오늘 완료!" : "완료!"} />
 
       <div style={contentStyle} className="animate-fade-in">
         {/* 축하 영역 */}
@@ -148,7 +150,7 @@ export default function CompletionPage() {
             marginBottom: '8px',
             color: 'var(--color-text-primary)',
           }}>
-            오늘 말씀 필사 완료!
+            {mode === 'random' ? "오늘 말씀 필사 완료!" : "필사 완료! 계속 해볼까요?"}
           </h2>
           <p className="body-2" style={{ color: 'var(--color-text-secondary)' }}>
             {verse.book} {verse.chapter}장 {verse.verse}절
@@ -160,8 +162,21 @@ export default function CompletionPage() {
 
         {/* 액션 버튼 */}
         <div style={actionButtonsStyle}>
-          <button style={primaryBtnStyle} onClick={() => navigate('/points')}>
-            포인트 현황 보기
+          <button 
+            style={primaryBtnStyle} 
+            onClick={async () => {
+              if (isAdLoaded) {
+                try {
+                  await showAd(() => navigate('/points'));
+                } catch {
+                  navigate('/points');
+                }
+              } else {
+                navigate('/points');
+              }
+            }}
+          >
+            광고 시청 후 포인트 받기
           </button>
           <button style={ghostBtnStyle} onClick={handleGoHome}>
             홈으로

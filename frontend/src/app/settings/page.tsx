@@ -1,5 +1,5 @@
 // 설정 화면 (Settings)
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AppNavBar } from '@/components/global/AppNavBar';
 import { CopyrightFooter } from '@/components/global/CopyrightFooter';
 import { requestNotificationPermission } from '@/lib/toss-bridge';
@@ -17,6 +17,15 @@ const FONT_SIZE_LABELS: Record<FontSize, string> = {
   medium: '중',
   large: '대',
 };
+
+// localStorage 키 상수
+export const FONT_SIZE_STORAGE_KEY = 'bible-pilsa-font-size';
+
+// 저장된 폰트 사이즈 읽기 (외부에서도 사용 가능)
+export function getSavedFontSize(): number {
+  const saved = localStorage.getItem(FONT_SIZE_STORAGE_KEY) as FontSize | null;
+  return FONT_SIZE_MAP[saved ?? 'medium'] ?? 30;
+}
 
 const pageStyle: React.CSSProperties = {
   display: 'flex',
@@ -121,52 +130,99 @@ const previewStyle = (fontSize: number): React.CSSProperties => ({
   borderRadius: '0 0 16px 16px',
 });
 
+const toastStyle = (visible: boolean): React.CSSProperties => ({
+  position: 'fixed',
+  bottom: visible ? '40px' : '0px',
+  left: '50%',
+  transform: 'translateX(-50%)',
+  backgroundColor: 'rgba(51, 61, 75, 0.9)',
+  color: '#fff',
+  padding: '12px 24px',
+  borderRadius: '24px',
+  fontSize: '14px',
+  fontWeight: 500,
+  opacity: visible ? 1 : 0,
+  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+  pointerEvents: 'none',
+  zIndex: 1000,
+  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+});
+
 export default function SettingsPage() {
   const { isLoggedIn } = useAuth();
   const { settings, updateSettings, isLoading } = useUserSettings(isLoggedIn);
 
   const [notifOn, setNotifOn] = useState(false);
   const [notifTime, setNotifTime] = useState('06:00');
-  const [fontSize, setFontSize] = useState<FontSize>('medium');
+  // localStorage에서 저장된 폰트 사이즈 불러오기
+  const [fontSize, setFontSize] = useState<FontSize>(() => {
+    const saved = localStorage.getItem(FONT_SIZE_STORAGE_KEY) as FontSize | null;
+    return (saved && ['small', 'medium', 'large'].includes(saved)) ? saved : 'medium';
+  });
+
+  const [toastVisible, setToastVisible] = useState(false);
+  const toastTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const showToast = () => {
+    setToastVisible(true);
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = setTimeout(() => {
+      setToastVisible(false);
+    }, 2500);
+  };
 
   // Load from backend API
   useEffect(() => {
     if (settings) {
       setNotifOn(settings.notificationEnabled);
-      if (settings.notificationTime) {
-        setNotifTime(settings.notificationTime);
+      setNotifTime(settings.notificationTime || '09:00');
+      if (settings.fontSize && ['small', 'medium', 'large'].includes(settings.fontSize)) {
+        setFontSize(settings.fontSize as FontSize);
+        localStorage.setItem(FONT_SIZE_STORAGE_KEY, settings.fontSize);
       }
     }
   }, [settings]);
 
+  // fontSize 변경 시 localStorage + DB 저장
+  const handleFontSizeChange = async (size: FontSize) => {
+    setFontSize(size);
+    localStorage.setItem(FONT_SIZE_STORAGE_KEY, size);
+    if (isLoggedIn) {
+      const success = await updateSettings(undefined, undefined, size);
+      if (success) showToast();
+    } else {
+      showToast();
+    }
+  };
+
   const handleNotifToggle = async () => {
     const nextState = !notifOn;
     if (nextState) {
-      // 권한 요청 (브라우저/앱인토스)
       const granted = await requestNotificationPermission();
       if (!granted) {
-        alert('알림 권한을 허용해주세요.');
-        return;
+        // 권한 없어도 토글 켜기 (토스 앱에서는 별도 권한 화면으로 이동)
+        console.warn('[Settings] 알림 권한 없음');
       }
     }
-    
-    // UI 우선 반영
+
     setNotifOn(nextState);
     const success = await updateSettings(nextState, notifTime);
     if (!success) {
-      // 롤백
       setNotifOn(!nextState);
-      alert('설정 변경에 실패했습니다.');
+      console.warn('[Settings] 알림 설정 저장 실패');
+    } else {
+      showToast();
     }
   };
 
   const handleTimeChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newTime = e.target.value; // "HH:mm" 형태
+    const newTime = e.target.value;
     setNotifTime(newTime);
-    
-    // 켜져있을 때만 바로 서버 업데이트
     if (notifOn) {
-      await updateSettings(notifOn, newTime);
+      const success = await updateSettings(notifOn, newTime);
+      if (success) showToast();
+    } else {
+      showToast(); // 시간만 변경해도 로컬 UI론 반영되므로 피드백 줌
     }
   };
 
@@ -180,9 +236,9 @@ export default function SettingsPage() {
         <div style={listStyle}>
           <div style={listItemStyle}>
             <span style={labelStyle}>매일 알림 시간</span>
-            <input 
-              type="time" 
-              value={notifTime} 
+            <input
+              type="time"
+              value={notifTime}
               onChange={handleTimeChange}
               disabled={isLoading || !isLoggedIn}
               style={{
@@ -193,7 +249,7 @@ export default function SettingsPage() {
                 color: notifOn ? 'var(--color-primary)' : 'var(--color-text-tertiary)',
                 fontWeight: 600,
                 outline: 'none',
-                cursor: 'pointer'
+                cursor: 'pointer',
               }}
             />
           </div>
@@ -204,6 +260,14 @@ export default function SettingsPage() {
             </button>
           </div>
         </div>
+        <p style={{
+          fontSize: '13px',
+          color: 'var(--color-text-tertiary)',
+          padding: '12px 24px 0',
+          lineHeight: 1.5
+        }}>
+          💡 알림을 켜두시면 매일 설정한 시간에 오늘의 말씀 필사를 잊지 않도록 안내해 드려요.
+        </p>
       </div>
 
       {/* 화면 설정 */}
@@ -217,7 +281,7 @@ export default function SettingsPage() {
                 <button
                   key={size}
                   style={segmentBtnStyle(fontSize === size)}
-                  onClick={() => setFontSize(size)}
+                  onClick={() => handleFontSizeChange(size)}
                 >
                   {FONT_SIZE_LABELS[size]}
                 </button>
@@ -255,6 +319,11 @@ export default function SettingsPage() {
 
       <div style={{ flex: 1 }} />
       <CopyrightFooter />
+
+      {/* 설정 저장 토스트 */}
+      <div style={toastStyle(toastVisible)}>
+        설정이 저장되었습니다
+      </div>
     </div>
   );
 }

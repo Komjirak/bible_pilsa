@@ -26,7 +26,7 @@ class CompleteRequestDto {
 
   @IsNumber()
   @Min(0)
-  @Max(60000)
+  @Max(600000)
   durationMs: number; // 필사 소요 시간 (ms, Fraud 감지용)
 }
 

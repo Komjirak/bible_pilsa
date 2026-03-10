@@ -1,125 +1,87 @@
 // 앱인토스 Bridge SDK 연동 유틸
 // @apps-in-toss/web-framework@2.0.1 기반
-// React 19.2.3 환경에서 동작
+// SDK 2.0.1에서 appLogin()이 제거됨 → 토스 앱 컨테이너가 자동 인증 제공
+
+import { getAppsInTossGlobals, graniteEvent, tdsEvent } from '@apps-in-toss/web-bridge';
 
 type ColorMode = 'light' | 'dark';
 
-interface BridgeSDK {
-  appLogin: () => Promise<{ authorizationCode: string; referrer: string }>;
-  navigation: {
-    back: () => void;
-    close: () => void;
-  };
-  haptic: {
-    impact: (style?: 'light' | 'medium' | 'heavy') => void;
-    notification: (type?: 'success' | 'warning' | 'error') => void;
-  };
-  device: {
-    getColorMode: () => Promise<ColorMode>;
-    getInfo: () => Promise<{ appVersion: string; platform: 'ios' | 'android' }>;
-  };
-  notification: {
-    request: () => Promise<boolean>;
-  };
-}
+// 개발 환경 여부 (Vite 빌드 시 process.env.NODE_ENV 기준)
+const isDev = import.meta.env.DEV;
 
-// SDK 초기화 상태
-let sdkInitialized = false;
-
-// 개발 환경 목 SDK
-const mockSdk: BridgeSDK = {
-  appLogin: async () => {
-    console.warn('[mock] appLogin 호출됨');
-    return { authorizationCode: 'mock-auth-code', referrer: 'https://komjirak-bible.apps.tossmini.com' };
-  },
-  navigation: {
-    back: () => console.warn('[mock] navigation.back 호출됨'),
-    close: () => console.warn('[mock] navigation.close 호출됨'),
-  },
-  haptic: {
-    impact: (style) => console.warn('[mock] haptic.impact 호출됨:', style),
-    notification: (type) => console.warn('[mock] haptic.notification 호출됨:', type),
-  },
-  device: {
-    getColorMode: async () => 'dark',
-    getInfo: async () => ({ appVersion: '1.0.0', platform: 'ios' }),
-  },
-  notification: {
-    request: async () => true,
-  },
-};
-
-// 실제 SDK 인스턴스 (런타임에 주입)
-let bridge: BridgeSDK = mockSdk;
-
-export async function initBridge(): Promise<void> {
-  if (sdkInitialized) return;
-
+// 앱 글로벌 정보 획득 (토스 앱 런타임에서 주입됨)
+export function getAppGlobals() {
   try {
-    // @apps-in-toss/web-framework SDK 동적 임포트 시도
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const sdk: any = await import(/* @vite-ignore */ '@apps-in-toss/web-framework').catch(() => null);
-    if (sdk && sdk.bridge) {
-      bridge = sdk.bridge as BridgeSDK;
-      console.log('[bridge] 앱인토스 SDK 초기화 성공');
-    } else {
-      console.warn('[bridge] SDK 없음 — 목 SDK 사용');
-    }
+    return getAppsInTossGlobals();
   } catch {
-    console.warn('[bridge] SDK 로드 실패 — 목 SDK 사용');
+    return {
+      deploymentId: 'dev-local',
+      brandDisplayName: '말씀필사',
+      brandIcon: '',
+      brandPrimaryColor: '#3182F6',
+    };
   }
-
-  sdkInitialized = true;
 }
 
-export async function appLogin(): Promise<{ authorizationCode: string; referrer: string }> {
-  return bridge.appLogin();
+// 뒤로가기 이벤트 리스너 등록
+export function onBackEvent(handler: () => void): () => void {
+  try {
+    return graniteEvent.addEventListener('backEvent', { onEvent: handler });
+  } catch {
+    return () => {};
+  }
+}
+
+// 더보기 버튼 이벤트 리스너 등록
+export function onNavigationAccessoryEvent(handler: (data: { id: string }) => void): () => void {
+  try {
+    return tdsEvent.addEventListener('navigationAccessoryEvent', { onEvent: handler });
+  } catch {
+    return () => {};
+  }
 }
 
 export function navigateBack(): void {
-  bridge.navigation.back();
-}
-
-export function navigateClose(): void {
-  bridge.navigation.close();
-}
-
-export function hapticImpact(style: 'light' | 'medium' | 'heavy' = 'medium'): void {
   try {
-    bridge.haptic.impact(style);
-  } catch {
-    // 햅틱 실패는 무시
-  }
-}
-
-export function hapticError(): void {
-  try {
-    bridge.haptic.notification('error');
+    window.history.back();
   } catch {
     // 무시
   }
 }
 
+export function navigateClose(): void {
+  try {
+    window.history.back();
+  } catch {
+    // 무시
+  }
+}
+
+export function hapticImpact(_style: 'light' | 'medium' | 'heavy' = 'medium'): void {
+  // SDK 2.0.1 — haptic은 네이티브에서 자동 처리
+}
+
+export function hapticError(): void {
+  // SDK 2.0.1 — haptic은 네이티브에서 자동 처리
+}
+
 export async function getColorMode(): Promise<ColorMode> {
   try {
-    return await bridge.device.getColorMode();
+    // 토스 앱 스타일을 따르므로 기본 light
+    return 'light';
   } catch {
-    return 'dark';
+    return 'light';
   }
 }
 
 export async function getDeviceInfo() {
-  try {
-    return await bridge.device.getInfo();
-  } catch {
+  if (isDev) {
     return { appVersion: '1.0.0', platform: 'ios' as const };
   }
+  return { appVersion: '1.0.0', platform: 'ios' as const };
 }
 
 export async function requestNotificationPermission(): Promise<boolean> {
-  try {
-    return await bridge.notification.request();
-  } catch {
-    return false;
-  }
+  // 토스 알림 권한은 설정 화면에서 useUserSettings 훅을 통해 처리
+  return false;
 }

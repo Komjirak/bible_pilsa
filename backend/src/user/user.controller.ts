@@ -11,8 +11,9 @@ import { JwtGuard } from '../common/guards/jwt.guard';
 import { IsBoolean, IsOptional, IsString, Matches } from 'class-validator';
 
 class UpdateNotificationDto {
+  @IsOptional()
   @IsBoolean()
-  enabled: boolean;
+  enabled?: boolean;
 
   @IsOptional()
   @IsString()
@@ -20,6 +21,10 @@ class UpdateNotificationDto {
     message: 'Time must be in HH:mm format',
   })
   time?: string;
+
+  @IsOptional()
+  @IsString()
+  fontSize?: string;
 }
 
 @Controller('users')
@@ -41,6 +46,7 @@ export class UserController {
       req.user.userKey,
       dto.enabled,
       dto.time,
+      dto.fontSize,
     );
   }
 }

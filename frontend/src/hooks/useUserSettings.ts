@@ -31,9 +31,9 @@ export function useUserSettings(isLoggedIn: boolean) {
     fetchSettings();
   }, [fetchSettings]);
 
-  const updateSettings = async (enabled: boolean, time?: string) => {
+  const updateSettings = async (enabled?: boolean, time?: string, fontSize?: string) => {
     try {
-      const updated = await updateNotificationSettings(enabled, time);
+      const updated = await updateNotificationSettings(enabled, time, fontSize);
       setState((prev) => ({ ...prev, settings: updated }));
       return true;
     } catch {

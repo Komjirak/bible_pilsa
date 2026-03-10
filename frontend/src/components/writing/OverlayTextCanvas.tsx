@@ -66,13 +66,13 @@ export function OverlayTextCanvas({
     flex: 1,
     cursor: 'text',
     wordBreak: 'keep-all',
-    fontFamily: 'var(--font-ui)', // Toss DS typography
+    fontFamily: 'var(--font-ui)',
     fontSize: `${fontSize}px`,
-    lineHeight: 1.6, // Tighter leading for sans-serif
+    lineHeight: 1.8,
     letterSpacing: '-0.3px',
     userSelect: 'none',
     WebkitUserSelect: 'none',
-    backgroundColor: 'var(--color-bg-primary)', // White background
+    backgroundColor: 'var(--color-bg-primary)',
   };
 
   const hiddenInputStyle: React.CSSProperties = {
@@ -117,15 +117,22 @@ export function OverlayTextCanvas({
 
           let color: string;
           let fontWeight: number | undefined;
+          let textDecoration: string | undefined;
+          let textDecorationColor: string | undefined;
 
           if (isCorrect) {
             color = 'var(--color-text-primary)';
-            fontWeight = 600; // A bit stronger correct text
+            fontWeight = 600;
           } else if (isError) {
-            color = 'var(--color-error)';
+            // 빨간색 + 진한 밑줄로 오타 강조
+            color = '#F04452';
+            fontWeight = 700;
+            textDecoration = 'underline';
+            textDecorationColor = '#F04452';
           } else {
-            // 가이드 글자 (미입력)
+            // 가이드 글자 (미입력) — 연한 회색
             color = 'var(--color-text-placeholder)';
+            fontWeight = 400;
           }
 
           return (
@@ -134,11 +141,14 @@ export function OverlayTextCanvas({
               style={{
                 color,
                 fontWeight,
+                textDecoration,
+                textDecorationColor,
+                textUnderlineOffset: '3px',
                 position: 'relative',
-                transition: 'color 0.15s ease',
+                transition: 'color 0.1s ease',
               }}
             >
-              {char}
+              {isError ? (inputText[idx] || char) : char}
             </span>
           );
         })}

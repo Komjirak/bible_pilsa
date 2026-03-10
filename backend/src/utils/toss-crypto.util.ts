@@ -13,7 +13,7 @@ export function decryptTossData(
   keyBase64: string,
   aadStr: string,
 ): string {
-  if (!encryptedBase64) return null;
+  if (!encryptedBase64) return '';
 
   try {
     const key = Buffer.from(keyBase64, 'base64');
