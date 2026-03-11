@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { AppNavBar } from '@/components/global/AppNavBar';
 import { CopyrightFooter } from '@/components/global/CopyrightFooter';
-import { WeeklyCalendarStrip } from '@/components/home/WeeklyCalendarStrip';
+import { StampBoard } from '@/components/home/StampBoard';
 import { useWeeklyStatus } from '@/hooks/useWeeklyStatus';
 import { useAuth } from '@/hooks/useAuth';
 import { getPointHistory } from '@/lib/api';
@@ -76,7 +76,7 @@ export default function PointsPage() {
 
   return (
     <div style={pageStyle}>
-      <AppNavBar title="포인트 현황" showBack />
+      <AppNavBar title="포인트 현황" />
       <div style={contentStyle} className="animate-fade-in">
         {/* 총 포인트 배너 */}
         <div style={bannerStyle}>
@@ -102,8 +102,7 @@ export default function PointsPage() {
           <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px', color: 'var(--color-text-primary)' }}>
             이번 주 현황
           </h3>
-          <WeeklyCalendarStrip
-            completedDays={status?.completedDays ?? Array(7).fill(false)}
+          <StampBoard
             completedCount={status?.completedCount ?? 0}
           />
           {status?.pointGranted && (
@@ -149,6 +148,28 @@ export default function PointsPage() {
           </div>
         )}
       </div>
+      <div style={{ flex: 1 }} />
+
+      {/* 홈으로 돌아가기 버튼 */}
+      <div style={{ padding: '0 24px 20px' }}>
+        <button
+          onClick={() => window.location.href = '/'}
+          style={{
+            width: '100%',
+            height: '52px',
+            borderRadius: '16px',
+            backgroundColor: 'var(--color-bg-tertiary)',
+            color: 'var(--color-text-secondary)',
+            fontSize: '16px',
+            fontWeight: 600,
+            border: 'none',
+            cursor: 'pointer',
+          }}
+        >
+          홈으로 돌아가기
+        </button>
+      </div>
+
       <CopyrightFooter />
     </div>
   );

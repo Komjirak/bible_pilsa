@@ -57,7 +57,7 @@ export function useFullScreenAd(options: UseFullScreenAdOptions = {}): UseFullSc
   useEffect(() => {
     async function loadSdk() {
       try {
-        const sdk: any = await import(/* @vite-ignore */ '@apps-in-toss/web-framework').catch(() => null);
+        const sdk: any = await import(/* @vite-ignore */ '@apps-in-toss/web-bridge').catch(() => null);
         if (sdk?.loadFullScreenAd && sdk?.showFullScreenAd) {
           loadFnRef.current = sdk.loadFullScreenAd;
           showFnRef.current = sdk.showFullScreenAd;

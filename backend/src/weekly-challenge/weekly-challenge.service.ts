@@ -88,17 +88,17 @@ export class WeeklyChallengeService {
     const weekDays = Array.from({ length: 7 }, (_, i) =>
       dayjs(weekStart).add(i, 'day').format('YYYY-MM-DD'),
     );
+    const completedDaysArr = weekDays.map((d) => completedDates.includes(d));
 
     return {
       weekStart,
-      today: todayKST,
-      completedDays: completedDates.length,
+      weekEnd: dayjs(weekStart).add(6, 'day').format('YYYY-MM-DD'),
+      completedDays: completedDaysArr,
+      completedCount: completedDates.length,
       pointGranted: challenge?.pointGranted ?? false,
-      days: weekDays.map((d) => ({
-        date: d,
-        completed: completedDates.includes(d),
-        isToday: d === todayKST,
-      })),
+      // 아래 수치들은 나중을 위한 공간
+      totalCompletions: 0,
+      totalPointsEarned: 0,
     };
   }
 }

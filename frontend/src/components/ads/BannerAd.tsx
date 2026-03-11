@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { TossAds } from '@apps-in-toss/web-bridge';
 
 interface BannerAdProps {
   adUnitId: string;
@@ -11,50 +12,26 @@ export function BannerAd({ adUnitId }: BannerAdProps) {
   useEffect(() => {
     if (!containerRef.current || attachedRef.current) return;
 
-    async function attachAd(retryCount = 0) {
-      // 300ms 딜레이 부여 (SDK/DOM 준비 대기)
-      await new Promise(resolve => setTimeout(resolve, 300));
-
-      try {
-        let TossAds: any;
-        
-        // 1. Framework import 시도
+    try {
+      // SDK 초기화
+      if (TossAds && typeof TossAds.initialize === 'function') {
         try {
-          const sdk: any = await import(/* @vite-ignore */ '@apps-in-toss/web-framework');
-          if (sdk && sdk.TossAds) {
-            TossAds = sdk.TossAds;
-          }
+          TossAds.initialize({});
         } catch (e) {
-          // ignore
-        }
-
-        // 2. window 객체에서 Fallback 찾기
-        if (!TossAds && window && (window as any).TossAds) {
-          TossAds = (window as any).TossAds;
-        }
-
-        if (TossAds && typeof TossAds.attachBanner === 'function') {
-          await TossAds.attachBanner({
-            adUnitId,
-            element: containerRef.current!,
-          });
-          attachedRef.current = true;
-          console.log('[BannerAd] 부착 성공', adUnitId);
-        } else {
-          console.warn('[BannerAd] TossAds 객체를 찾을 수 없습니다. (재시도:', retryCount, ')');
-          if (retryCount < 3) {
-            setTimeout(() => attachAd(retryCount + 1), 1000);
-          }
-        }
-      } catch (err) {
-        console.warn('[BannerAd] 배너 광고 부착 실패', err);
-        if (retryCount < 2) {
-          setTimeout(() => attachAd(retryCount + 1), 2000);
+          console.warn('[BannerAd] Initialize 에러 무시', e);
         }
       }
-    }
 
-    attachAd();
+      if (TossAds && typeof TossAds.attachBanner === 'function') {
+        TossAds.attachBanner(adUnitId, containerRef.current);
+        attachedRef.current = true;
+        console.log('[BannerAd] 부착 성공', adUnitId);
+      } else {
+        console.warn('[BannerAd] TossAds.attachBanner를 지원하지 않는 환경입니다.');
+      }
+    } catch (err) {
+      console.warn('[BannerAd] 배너 광고 부착 실패', err);
+    }
   }, [adUnitId]);
 
   return (

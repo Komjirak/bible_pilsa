@@ -34,6 +34,7 @@ async function request<T>(
   const token = getToken();
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
+    'Bypass-Tunnel-Reminder': 'true', // localtunnel 경고 페이지 우회용
     ...(options.headers as Record<string, string>),
   };
 
@@ -131,6 +132,14 @@ export async function getWeeklyStatus(): Promise<WeeklyStatusResponse> {
 // 포인트 이력 조회
 export async function getPointHistory(): Promise<PointHistoryResponse> {
   return request<PointHistoryResponse>('/api/v1/points/history');
+}
+
+// 7일 완주 보상 지급 테스트
+export async function grantTestPoint(): Promise<any> {
+  return request<any>('/api/v1/points/test/grant', {
+    method: 'POST',
+    body: JSON.stringify({}),
+  });
 }
 
 // 사용자 설정 조회

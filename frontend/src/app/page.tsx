@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { AppNavBar } from '@/components/global/AppNavBar';
 import { CopyrightFooter } from '@/components/global/CopyrightFooter';
 import { TodayVerseCard } from '@/components/home/TodayVerseCard';
-import { WeeklyCalendarStrip } from '@/components/home/WeeklyCalendarStrip';
+import { StampBoard } from '@/components/home/StampBoard';
 import { BannerAd } from '@/components/ads/BannerAd';
 import { useAuth } from '@/hooks/useAuth';
 import { useDailyVerse } from '@/hooks/useDailyVerse';
@@ -90,32 +90,79 @@ export default function HomePage() {
     return (
       <div style={pageStyle}>
         <AppNavBar title="말씀필사" />
-        <div style={{ ...contentStyle, alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ textAlign: 'center', padding: '0 24px' }} className="animate-fade-in">
-            <p style={{ fontSize: '48px', marginBottom: '16px' }}>📖</p>
-            <h2 style={{
-              fontFamily: 'var(--font-verse)',
-              fontSize: '24px',
-              fontWeight: 700,
-              marginBottom: '8px',
-              color: 'var(--color-text-primary)',
-            }}>
-              말씀필사
-            </h2>
-            <p style={{
-              fontSize: '15px',
-              color: 'var(--color-text-secondary)',
-              marginBottom: '32px',
-              lineHeight: 1.6,
-            }}>
-              하루 한 절, 성경 말씀을 직접 써보세요.
-            </p>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '24px 24px 40px 24px' }}>
+          {/* Header Title */}
+          <div style={{ marginBottom: '40px' }}>
+            <h1 style={{ fontSize: '26px', fontWeight: 800, color: 'var(--color-text-primary)', lineHeight: 1.4 }}>
+              매일 성경 말씀을 필사하고<br />포인트 받아가세요
+            </h1>
+          </div>
+
+          {/* Steps List */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '28px', flex: 1 }}>
+            {/* Step 1 */}
+            <div style={{ display: 'flex', gap: '16px' }}>
+              <div style={{
+                width: '40px', height: '40px', borderRadius: '12px', backgroundColor: '#E8F3FF',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0
+              }}>
+                📖
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '17px', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: '4px' }}>
+                  오늘의 말씀 필사
+                </div>
+                <div style={{ fontSize: '14px', color: 'var(--color-text-secondary)', lineHeight: 1.4 }}>
+                  하루 한 절의 성경 말씀을 직접 써봐요
+                </div>
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div style={{ display: 'flex', gap: '16px' }}>
+              <div style={{
+                width: '40px', height: '40px', borderRadius: '12px', backgroundColor: '#E8F3FF',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0
+              }}>
+                📆
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '17px', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: '4px' }}>
+                  7일 연속 달성
+                </div>
+                <div style={{ fontSize: '14px', color: 'var(--color-text-secondary)', lineHeight: 1.4 }}>
+                  매일 필사하여 7일 연속 목표를 달성하세요
+                </div>
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div style={{ display: 'flex', gap: '16px' }}>
+              <div style={{
+                width: '40px', height: '40px', borderRadius: '20px', backgroundColor: '#3182F6',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', color: 'white', fontWeight: 'bold', flexShrink: 0
+              }}>
+                P
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '17px', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: '4px' }}>
+                  토스 포인트
+                </div>
+                <div style={{ fontSize: '14px', color: 'var(--color-text-secondary)', lineHeight: 1.4 }}>
+                  적립된 포인트는 토스 앱에서 자유롭게 사용하세요
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Button */}
+          <div style={{ marginTop: 'auto', paddingTop: '20px' }}>
             <button
               style={loginBtnStyle}
               onClick={login}
               disabled={authLoading}
             >
-              {authLoading ? '로그인 중...' : '토스로 시작하기'}
+              {authLoading ? '로그인 중...' : '시작하기'}
             </button>
           </div>
         </div>
@@ -126,7 +173,7 @@ export default function HomePage() {
 
   return (
     <div style={pageStyle}>
-      <AppNavBar title="말씀필사" />
+      <AppNavBar title="말씀필사" showSettings />
       <div style={contentStyle}>
         {/* 모드 선택 */}
         <div style={{ padding: '0 24px', display: 'flex', justifyContent: 'center' }}>
@@ -181,12 +228,9 @@ export default function HomePage() {
           />
         )}
 
-        {mode === 'random' && (
-          <WeeklyCalendarStrip
-            completedDays={status?.completedDays ?? Array(7).fill(false)}
-            completedCount={status?.completedCount ?? 0}
-          />
-        )}
+        <StampBoard
+          completedCount={status?.completedCount ?? 0}
+        />
 
         {(mode === 'random' && isTodayCompleted) ? (
           <div style={alreadyDoneCardStyle} className="animate-slide-up">
@@ -212,7 +256,7 @@ export default function HomePage() {
 
         {/* 하단 배너 광고 */}
         <div style={{ padding: '0 24px' }}>
-          <BannerAd adUnitId="ait.v2.live.ae8e04b2200544f5" />
+          <BannerAd adUnitId="ait.v2.live.65db39c0f5d24194" />
         </div>
 
         <div style={{ display: 'flex', gap: '12px', padding: '0 24px' }}>

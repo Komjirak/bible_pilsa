@@ -11,17 +11,12 @@ export class PointService {
   constructor(private readonly prisma: PrismaService) {}
 
   // 7일 완주 포인트 지급 (토스 executePromotion API)
-  async grantWeeklyCompletePoint(userKey: string, weekStart: string): Promise<void> {
+  async grantWeeklyCompletePoint(userKey: string, weekStart: string): Promise<any> {
     const amount = Number(process.env.WEEKLY_COMPLETE_POINT_AMOUNT ?? 10);
     const promotionCode = process.env.TOSS_PROMOTION_CODE; // 발급받은 프로모션 코드
-    const apiKey = process.env.TOSS_PROMOTION_API_KEY; // 보상 지급 API Key
     
-    // Toss executePromotion URL
-    const apiUrl = 'https://api.toss.im/api-partner/v1/apps-in-toss/promotion/execute-promotion';
-
-    if (!promotionCode || !apiKey) {
-      // 개발 환경 — mock
-      this.logger.warn(`[point] 프로모션 발급 환경변수 미설정 — 포인트 지급 mock: userKey=${userKey} amount=${amount}`);
+    if (!promotionCode) {
+      this.logger.warn(`[point] 프로모션 발급 환경변수 미설정 — 포인트 지급 개발 mock 처리: userKey=${userKey} amount=${amount}`);
       await this.prisma.pointTransaction.create({
         data: {
           userKey,
@@ -31,44 +26,101 @@ export class PointService {
           tossOrderId: `mock-${Date.now()}`,
         },
       });
-      return;
+      return { success: true, message: 'Mock 포인트 지급', grantedAmount: amount };
     }
 
-    // 중복 지급 방지용 고유 지급 키 (고유해야 함)
-    const rewardKey = `bp-reward-${userKey.slice(0, 8)}-${weekStart}`;
+    // 파일 시스템에서 mTLS 인증서 로드 (토스 서버 간 인증용, 별도의 API Key는 불필요)
+    let httpsAgent: https.Agent | undefined;
+    try {
+      const certPath = './certs/toss-public.crt';
+      const keyPath = './certs/toss-private.key';
+      
+      if (fs.existsSync(certPath) && fs.existsSync(keyPath)) {
+        httpsAgent = new https.Agent({
+          cert: fs.readFileSync(certPath),
+          key: fs.readFileSync(keyPath),
+        });
+        this.logger.log(`[point] mTLS 인증서 로드 완료 (${certPath}, ${keyPath})`);
+      } else {
+        this.logger.warn('[point] mTLS 인증서가 없습니다. API 호출이 실패할 수 있습니다.');
+      }
+    } catch (err) {
+      this.logger.error('[point] mTLS 인증서 로드 중 오류 발생', err);
+    }
 
     try {
-      const { data } = await axios.post(
-        apiUrl,
+      // API 1단계: 프로모션 리워드 지급 Key 생성하기
+      const getKeyUrl = 'https://apps-in-toss-api.toss.im/api-partner/v1/apps-in-toss/promotion/execute-promotion/get-key';
+      const { data: keyData } = await axios.post(
+        getKeyUrl,
+        {}, // body는 비워둡니다
+        { 
+          headers: {
+            'x-toss-user-key': userKey,
+            'Content-Type': 'application/json',
+          },
+          httpsAgent,
+          timeout: 10000 
+        }
+      );
+
+      if (keyData?.resultType !== 'SUCCESS' || !keyData?.success?.key) {
+        throw new Error(`get-key 실패: ${JSON.stringify(keyData)}`);
+      }
+      
+      const paymentKey = keyData.success.key;
+      this.logger.log(`[point] 1단계 get-key 성공: paymentKey=${paymentKey}`);
+
+      // API 2단계: 프로모션 리워드 실제 지급하기
+      const executeUrl = 'https://apps-in-toss-api.toss.im/api-partner/v1/apps-in-toss/promotion/execute-promotion';
+      const { data: executeData } = await axios.post(
+        executeUrl,
         { 
           promotionCode, 
-          key: rewardKey, 
+          key: paymentKey, 
           amount 
         },
         { 
           headers: {
-            'Authorization': `Bearer ${apiKey}`,
             'x-toss-user-key': userKey,
             'Content-Type': 'application/json',
           },
+          httpsAgent,
           timeout: 10000 
-        },
+        }
       );
 
-      await this.prisma.pointTransaction.create({
-        data: {
-          userKey,
-          weekStart,
-          amount,
-          reason: 'weekly_complete_7days',
-          tossOrderId: rewardKey,
-        },
-      });
+      if (executeData?.resultType !== 'SUCCESS') {
+        throw new Error(`execute-promotion 실패: ${JSON.stringify(executeData)}`);
+      }
 
-      this.logger.log(`[point] executePromotion 성공: userKey=${userKey} rewardKey=${rewardKey}`);
-    } catch (err) {
-      this.logger.error(`[point] executePromotion 실패: userKey=${userKey}`, err?.response?.data || err?.message);
-      throw err;
+      this.logger.log(`[point] 2단계 executePromotion 성공: userKey=${userKey}`);
+
+      // DB 저장 (성공 시)
+      try {
+        await this.prisma.pointTransaction.create({
+          data: {
+            userKey,
+            weekStart,
+            amount,
+            reason: 'weekly_complete_7days',
+            tossOrderId: paymentKey,
+          },
+        });
+      } catch (dbErr) {
+        this.logger.warn(`[point] DB 기록 실패 (가벼운 무시): ${dbErr}`);
+      }
+
+      return { success: true, message: '토스 API 지급 성공', grantedAmount: amount };
+    } catch (err: any) {
+      const tossError = err?.response?.data || err?.message;
+      this.logger.error(`[point] 프로모션 지급 API 실패: userKey=${userKey}`, tossError);
+      
+      return {
+        success: false,
+        message: `토스 API 에러: ${JSON.stringify(tossError)}`,
+        tossError,
+      };
     }
   }
 

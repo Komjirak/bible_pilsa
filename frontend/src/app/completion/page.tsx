@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { AppNavBar } from '@/components/global/AppNavBar';
 import { CopyrightFooter } from '@/components/global/CopyrightFooter';
 import { WeeklyCompleteModal } from '@/components/completion/WeeklyCompleteModal';
-import { WeeklyCalendarStrip } from '@/components/home/WeeklyCalendarStrip';
+import { StampBoard } from '@/components/home/StampBoard';
 import { useFullScreenAd } from '@/hooks/useFullScreenAd';
 import type { CompleteResponse, DailyVerseResponse } from '@/types/api';
 
@@ -130,10 +130,7 @@ export default function CompletionPage() {
     }
   };
 
-  const weeklyStatus = {
-    completedDays: Array(7).fill(false).map((_, i) => i < result.weekProgress.completed),
-    completedCount: result.weekProgress.completed,
-  };
+  const completedCount = result.weekProgress.completed;
 
   return (
     <div style={pageStyle}>
@@ -162,23 +159,7 @@ export default function CompletionPage() {
 
         {/* 액션 버튼 */}
         <div style={actionButtonsStyle}>
-          <button 
-            style={primaryBtnStyle} 
-            onClick={async () => {
-              if (isAdLoaded) {
-                try {
-                  await showAd(() => navigate('/points'));
-                } catch {
-                  navigate('/points');
-                }
-              } else {
-                navigate('/points');
-              }
-            }}
-          >
-            광고 시청 후 포인트 받기
-          </button>
-          <button style={ghostBtnStyle} onClick={handleGoHome}>
+          <button style={primaryBtnStyle} onClick={handleGoHome}>
             홈으로
           </button>
         </div>
@@ -193,9 +174,8 @@ export default function CompletionPage() {
           }}>
             이번 주 진행 현황
           </h3>
-          <WeeklyCalendarStrip
-            completedDays={weeklyStatus.completedDays}
-            completedCount={weeklyStatus.completedCount}
+          <StampBoard
+            completedCount={completedCount}
           />
         </div>
 

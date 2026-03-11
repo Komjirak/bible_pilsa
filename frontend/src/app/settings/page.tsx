@@ -228,7 +228,7 @@ export default function SettingsPage() {
 
   return (
     <div style={pageStyle}>
-      <AppNavBar title="설정" showBack />
+      <AppNavBar title="설정" />
 
       {/* 알림 설정 */}
       <div style={sectionStyle}>
@@ -318,6 +318,27 @@ export default function SettingsPage() {
       </div>
 
       <div style={{ flex: 1 }} />
+      
+      {/* 홈으로 돌아가기 버튼 */}
+      <div style={{ padding: '0 24px 20px' }}>
+        <button
+          onClick={() => window.location.href = '/'}
+          style={{
+            width: '100%',
+            height: '52px',
+            borderRadius: '16px',
+            backgroundColor: 'var(--color-bg-tertiary)',
+            color: 'var(--color-text-secondary)',
+            fontSize: '16px',
+            fontWeight: 600,
+            border: 'none',
+            cursor: 'pointer',
+          }}
+        >
+          홈으로 돌아가기
+        </button>
+      </div>
+
       <CopyrightFooter />
 
       {/* 설정 저장 토스트 */}

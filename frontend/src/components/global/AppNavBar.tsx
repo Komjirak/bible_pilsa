@@ -47,20 +47,47 @@ const spacerStyle: React.CSSProperties = {
   flexShrink: 0,
 };
 
-export function AppNavBar({ title }: AppNavBarProps) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function AppNavBar({ title, showBack, showSettings }: AppNavBarProps & { showSettings?: boolean }) {
   const navigate = useNavigate();
 
   const handleBack = () => {
-    navigateBack();
-    navigate(-1);
+    if (showBack) {
+      if (window.history.length > 1) {
+        navigate(-1);
+      } else {
+        navigate('/');
+      }
+      navigateBack(); // Toss bridge call
+    }
+  };
+
+  const handleSettings = () => {
+    navigate('/settings');
   };
 
   return (
     <nav style={navStyle}>
-      <div style={spacerStyle} />
+      <div style={spacerStyle}>
+        {showBack && (
+          <button style={backBtnStyle} onClick={handleBack} aria-label="뒤로가기">
+            ‹
+          </button>
+        )}
+      </div>
+      
       <h1 style={titleStyle}>{title}</h1>
-      <div style={spacerStyle} />
+      
+      <div style={spacerStyle}>
+        {showSettings && (
+          <button 
+            style={{ ...backBtnStyle, fontSize: '24px' }} 
+            onClick={handleSettings} 
+            aria-label="설정"
+          >
+            ⚙️
+          </button>
+        )}
+      </div>
     </nav>
   );
 }

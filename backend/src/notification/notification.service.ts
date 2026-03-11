@@ -1,5 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
+import * as https from 'https';
+import * as fs from 'fs';
 
 @Injectable()
 export class NotificationService {
@@ -7,15 +9,24 @@ export class NotificationService {
 
   async sendSmartMessage(userKey: string, timeString: string) {
     const endpoint = 'https://apps-in-toss-api.toss.im/api-partner/v1/apps-in-toss/messenger/send-message';
-    const templateSetCode = 'bible_pilsa_reminder'; // TODO: 실제 템플릿 코드로 변경
+    const templateSetCode = 'bible_pilsa_reminder'; // Toss 콘솔에 등록된 템플릿 코드
 
     try {
-      this.logger.log(`Sending push to user ${userKey} for time ${timeString}`);
+      this.logger.log(`[Push] Sending to user ${userKey} for time ${timeString}`);
       
-      // 실제 토스 환경변수가 없는 개발 환경에서는 모킹 처리
-      if (!process.env.TOSS_CLIENT_ID || process.env.TOSS_CLIENT_ID.startsWith('dev')) {
-        this.logger.log(`[Mock] Push sent successfully to ${userKey} (${timeString})`);
-        return true;
+      // mTLS 인증서 로드
+      let httpsAgent: https.Agent | undefined;
+      const certPath = './certs/toss-public.crt';
+      const keyPath = './certs/toss-private.key';
+      
+      if (fs.existsSync(certPath) && fs.existsSync(keyPath)) {
+        httpsAgent = new https.Agent({
+          cert: fs.readFileSync(certPath),
+          key: fs.readFileSync(keyPath),
+        });
+      } else {
+        this.logger.warn('[Push] mTLS certificates not found. Using Mock mode.');
+        return true; // 개발 환경 임시 허용
       }
 
       const { data } = await axios.post(
@@ -23,7 +34,7 @@ export class NotificationService {
         {
           templateSetCode,
           context: {
-            time: timeString,
+            time: timeString, // 템플릿 내 {{time}} 변수 치환
           },
         },
         {
@@ -31,16 +42,16 @@ export class NotificationService {
             'Content-Type': 'application/json',
             'X-Toss-User-Key': userKey,
           },
+          httpsAgent,
           timeout: 5000,
         },
       );
 
-      this.logger.log(`Push API result for ${userKey}: ${data.resultType}`);
+      this.logger.log(`[Push] result for ${userKey}: ${data.resultType}`);
       return data.resultType === 'SUCCESS';
     } catch (err: any) {
-      this.logger.error(
-        `Failed to send push to ${userKey}: ${err?.response?.data?.error?.message || err.message}`,
-      );
+      const errorMsg = err?.response?.data || err.message;
+      this.logger.error(`[Push] Failed for ${userKey}: ${JSON.stringify(errorMsg)}`);
       return false;
     }
   }

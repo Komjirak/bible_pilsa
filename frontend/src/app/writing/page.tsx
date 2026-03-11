@@ -7,6 +7,7 @@ import { OverlayTextCanvas } from '@/components/writing/OverlayTextCanvas';
 import { useDailyVerse } from '@/hooks/useDailyVerse';
 import { useSequentialVerse, SEQUENTIAL_INDEX_KEY } from '@/hooks/useSequentialVerse';
 import { useAuth } from '@/hooks/useAuth';
+import { useFullScreenAd } from '@/hooks/useFullScreenAd';
 import { calculateSimilarity, isSimilarityPassed } from '@/lib/similarity';
 import { submitCompletion } from '@/lib/api';
 import { getTodayKST } from '@/lib/dateUtils';
@@ -16,7 +17,7 @@ import { BIBLE_MODE_KEY } from '@/app/page';
 const pageStyle: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
-  height: '100vh',
+  height: '100dvh', // Use dynamic viewport height
   backgroundColor: 'var(--color-bg-primary)',
   overflow: 'hidden',
 };
@@ -84,6 +85,8 @@ export default function WritingPage() {
     return (localStorage.getItem(BIBLE_MODE_KEY) as 'random' | 'sequential') || 'random';
   });
 
+  const { isAdLoaded, showAd } = useFullScreenAd({ adType: 'interstitial', autoLoad: true });
+
   const { verse: dailyVerse } = useDailyVerse(isLoggedIn);
   const { verse: seqVerse } = useSequentialVerse();
   
@@ -146,7 +149,11 @@ export default function WritingPage() {
         localStorage.setItem(SEQUENTIAL_INDEX_KEY, (currentIndex + 1).toString());
       }
 
-      navigate('/completion', { state: { result, verse, mode } });
+      if (isAdLoaded) {
+        showAd(() => navigate('/completion', { state: { result, verse, mode } }));
+      } else {
+        navigate('/completion', { state: { result, verse, mode } });
+      }
     } catch {
       showToastMessage('완료 처리 중 오류가 발생했어요. 다시 시도해주세요.');
     } finally {
