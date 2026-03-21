@@ -10,6 +10,7 @@ const HomePage = () => {
   const navigate = useNavigate();
   const [mode, setMode] = useState<BibleMode>('random');
   const [verseData, setVerseData] = useState(getSampleVerseForToday());
+  const [completedDays] = useState(0); // TODO: 백엔드 연동 시 실제 데이터
 
   useEffect(() => {
     if (mode === 'random') {
@@ -19,117 +20,161 @@ const HomePage = () => {
     }
   }, [mode]);
 
+  const today = new Date();
+  const dateLabel = `${today.getMonth() + 1}월 ${today.getDate()}일`;
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: 'var(--color-bg-primary)' }}>
-      <div className="app-nav-bar">
-        <h1>말씀필사</h1>
+    <div style={{
+      display: 'flex', flexDirection: 'column', minHeight: '100vh',
+      backgroundColor: '#F4F5F7',
+    }}>
+      {/* 헤더 */}
+      <div style={{
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        padding: '12px 20px', backgroundColor: '#fff',
+      }}>
+        <h1 style={{ fontSize: '18px', fontWeight: 700, color: '#191F28', margin: 0 }}>말씀필사</h1>
+        <button
+          onClick={() => navigate('/settings')}
+          style={{
+            width: '36px', height: '36px', borderRadius: '18px',
+            backgroundColor: '#F2F4F6', border: 'none', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '18px',
+          }}
+        >⚙️</button>
       </div>
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '24px', paddingTop: '24px', paddingBottom: '16px' }}>
-        {/* 모드 선택 */}
-        <div style={{ padding: '0 24px', display: 'flex', justifyContent: 'center' }}>
-          <div style={{
-            display: 'flex', backgroundColor: 'var(--color-bg-secondary)', 
-            borderRadius: '20px', padding: '4px', gap: '4px', width: '100%'
-          }}>
-            <button
-              style={{
-                flex: 1, padding: '10px 0', borderRadius: '16px',
-                backgroundColor: mode === 'random' ? 'var(--color-bg-primary)' : 'transparent',
-                color: mode === 'random' ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
-                fontWeight: mode === 'random' ? 700 : 500,
-                boxShadow: mode === 'random' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
-                border: 'none', cursor: 'pointer',
-              }}
-              onClick={() => setMode('random')}
-            >
-              오늘의 말씀
-            </button>
-            <button
-              style={{
-                flex: 1, padding: '10px 0', borderRadius: '16px',
-                backgroundColor: mode === 'sequential' ? 'var(--color-bg-primary)' : 'transparent',
-                color: mode === 'sequential' ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
-                fontWeight: mode === 'sequential' ? 700 : 500,
-                boxShadow: mode === 'sequential' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
-                border: 'none', cursor: 'pointer',
-              }}
-              onClick={() => setMode('sequential')}
-            >
-              순서대로
-            </button>
-          </div>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '16px', padding: '16px 20px' }}>
+        {/* 모드 탭 */}
+        <div style={{
+          display: 'flex', backgroundColor: '#fff', borderRadius: '12px',
+          padding: '4px', gap: '4px',
+        }}>
+          <button
+            onClick={() => setMode('random')}
+            style={{
+              flex: 1, padding: '10px 0', borderRadius: '8px', border: 'none',
+              backgroundColor: mode === 'random' ? '#F2F4F6' : 'transparent',
+              color: mode === 'random' ? '#191F28' : '#B0B8C1',
+              fontWeight: mode === 'random' ? 700 : 500, fontSize: '15px',
+              cursor: 'pointer',
+            }}
+          >오늘의 말씀</button>
+          <button
+            onClick={() => setMode('sequential')}
+            style={{
+              flex: 1, padding: '10px 0', borderRadius: '8px', border: 'none',
+              backgroundColor: mode === 'sequential' ? '#F2F4F6' : 'transparent',
+              color: mode === 'sequential' ? '#191F28' : '#B0B8C1',
+              fontWeight: mode === 'sequential' ? 700 : 500, fontSize: '15px',
+              cursor: 'pointer',
+            }}
+          >순서대로</button>
         </div>
 
-        {/* 데일리 말씀 카드 */}
-        <div style={{ padding: '0 24px' }}>
-          <div style={{ backgroundColor: 'var(--color-bg-secondary)', padding: '24px', borderRadius: '24px' }}>
-            <p style={{ color: 'var(--color-text-secondary)', fontSize: '13px', fontWeight: 600, marginBottom: '8px' }}>
+        {/* 말씀 카드 */}
+        <div style={{
+          backgroundColor: '#fff', borderRadius: '20px', padding: '24px',
+          position: 'relative',
+        }}>
+          {/* 상단 레이블 */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <span style={{ fontSize: '14px', fontWeight: 600, color: '#3182F6' }}>
               {mode === 'random' ? '오늘의 말씀' : '순서대로 필사'}
-            </p>
-            <p style={{ fontSize: '20px', fontWeight: 600, color: 'var(--color-text-primary)', lineHeight: 1.5 }}>
-              {verseData.text}
-            </p>
-            <p style={{ color: 'var(--color-text-tertiary)', fontSize: '14px', marginTop: '12px' }}>
-              {verseData.verseRef}
-            </p>
+            </span>
+            <span style={{ fontSize: '13px', color: '#8B95A1' }}>{dateLabel}</span>
           </div>
+
+          {/* 북마크 아이콘 */}
+          <div style={{
+            position: 'absolute', top: '0', right: '24px',
+            width: '24px', height: '36px', backgroundColor: '#FF5050',
+            clipPath: 'polygon(0 0, 100% 0, 100% 100%, 50% 75%, 0 100%)',
+          }} />
+
+          {/* 말씀 텍스트 */}
+          <p style={{
+            fontSize: '18px', fontWeight: 500, color: '#191F28',
+            lineHeight: 1.7, margin: '0 0 16px 0', wordBreak: 'keep-all',
+          }}>
+            {verseData.text}
+          </p>
+
+          {/* 구절 레퍼런스 */}
+          <p style={{
+            fontSize: '14px', color: '#8B95A1', margin: 0, textAlign: 'right',
+          }}>
+            {verseData.verseRef}
+          </p>
         </div>
 
         {/* 스탬프 보드 */}
-        <div style={{ padding: '0 24px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '12px' }}>주간 완주 현황</h3>
-          <div style={{ display: 'flex', justifyContent: 'space-between', backgroundColor: 'var(--color-bg-secondary)', padding: '16px', borderRadius: '16px' }}>
-            {[1, 2, 3, 4, 5, 6, 7].map((day) => (
-              <div key={day} style={{ 
-                width: '32px', height: '32px', borderRadius: '50%',
-                backgroundColor: day <= 3 ? 'var(--color-primary)' : 'var(--color-bg-tertiary)',
-                color: day <= 3 ? 'white' : 'var(--color-text-secondary)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 600
-              }}>
-                {day}
-              </div>
-            ))}
+        <div style={{
+          backgroundColor: '#fff', borderRadius: '16px', padding: '20px',
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '12px' }}>
+            {[1, 2, 3, 4, 5, 6, 7].map((day) => {
+              const isCompleted = day <= completedDays;
+              const isCurrent = day === completedDays + 1;
+              return (
+                <div key={day} style={{
+                  width: '34px', height: '34px', borderRadius: '50%',
+                  backgroundColor: isCompleted ? '#3182F6' : '#F2F4F6',
+                  border: isCurrent ? '2px solid #3182F6' : '2px solid transparent',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'all 0.2s',
+                }}>
+                  {isCompleted && (
+                    <span style={{ color: '#fff', fontSize: '14px', fontWeight: 700 }}>✓</span>
+                  )}
+                  {day === 7 && !isCompleted && (
+                    <span style={{ fontSize: '12px' }}>🎁</span>
+                  )}
+                </div>
+              );
+            })}
           </div>
+          <p style={{
+            textAlign: 'center', fontSize: '13px', color: '#8B95A1', margin: 0,
+          }}>
+            이번 주 {completedDays}번 완료 (목표: 7번)
+          </p>
         </div>
 
-        <div style={{ padding: '0 24px' }}>
-          <BannerAd adUnitId="ait.v2.live.65db39c0f5d24194" />
-        </div>
+        {/* 필사하기 버튼 */}
+        <button
+          onClick={() => navigate('/writing')}
+          style={{
+            width: '100%', height: '56px', borderRadius: '16px',
+            backgroundColor: '#3182F6', color: '#fff',
+            fontSize: '17px', fontWeight: 600, border: 'none', cursor: 'pointer',
+          }}
+        >
+          지금 필사하기
+        </button>
+
+        {/* 배너 광고 */}
+        <BannerAd adUnitId="ait.v2.live.65db39c0f5d24194" />
 
         {/* 하단 버튼 */}
-        <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '12px', padding: '0 24px' }}>
-          <button 
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <button
+            onClick={() => navigate('/points')}
             style={{
-              width: '100%', height: '56px', borderRadius: '24px', backgroundColor: 'var(--color-accent)',
-              color: '#fff', fontSize: '17px', fontWeight: 600, cursor: 'pointer', border: 'none'
-            }} 
-            onClick={() => navigate('/writing')}
-          >
-            지금 필사하기
-          </button>
-          <div style={{ display: 'flex', gap: '12px' }}>
-             <button
-              style={{
-                flex: 1, height: '48px', borderRadius: '16px', border: 'none',
-                backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-text-secondary)',
-                fontSize: '14px', fontWeight: 500, cursor: 'pointer',
-              }}
-              onClick={() => navigate('/points')}
-            >
-              달란트 현황
-            </button>
-            <button
-              style={{
-                flex: 1, height: '48px', borderRadius: '16px', border: 'none',
-                backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-text-secondary)',
-                fontSize: '14px', fontWeight: 500, cursor: 'pointer',
-              }}
-              onClick={() => navigate('/settings')}
-            >
-              설정
-            </button>
-          </div>
+              flex: 1, height: '48px', borderRadius: '12px', border: 'none',
+              backgroundColor: '#fff', color: '#4E5968',
+              fontSize: '14px', fontWeight: 600, cursor: 'pointer',
+            }}
+          >포인트 현황</button>
+          <button
+            onClick={() => navigate('/settings')}
+            style={{
+              flex: 1, height: '48px', borderRadius: '12px', border: 'none',
+              backgroundColor: '#fff', color: '#4E5968',
+              fontSize: '14px', fontWeight: 600, cursor: 'pointer',
+            }}
+          >설정</button>
         </div>
       </div>
     </div>

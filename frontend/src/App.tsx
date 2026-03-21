@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
+import IntroPage from './pages/IntroPage';
 import HomePage from './pages/HomePage';
 import WritingPage from './pages/WritingPage';
 import CompletionPage from './pages/CompletionPage';
@@ -8,7 +9,8 @@ import SettingsPage from './pages/SettingsPage';
 export function App() {
   return (
     <Routes>
-      <Route path="/" element={<HomePage />} />
+      <Route path="/" element={<IntroPage />} />
+      <Route path="/home" element={<HomePage />} />
       <Route path="/writing" element={<WritingPage />} />
       <Route path="/completion" element={<CompletionPage />} />
       <Route path="/points" element={<PointsPage />} />
