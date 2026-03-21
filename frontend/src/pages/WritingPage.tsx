@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFullScreenAd } from '../hooks/useFullScreenAd';
-import { useVerseStore } from '../store/useVerseStore';
+import { getSampleVerseForToday } from '../data/sampleBible';
 import '../index.css';
 
-const WritingPage: React.FC = () => {
+const WritingPage = () => {
   const navigate = useNavigate();
   const [text, setText] = useState('');
   const { showAd, isAdLoaded } = useFullScreenAd();
-  const { currentVerse } = useVerseStore();
   
-  const targetText = currentVerse ? `${currentVerse.text} (${currentVerse.verseRef})` : '';
+  const verseData = getSampleVerseForToday();
+  const targetText = verseData.text;
   const progress = targetText.length > 0 ? text.length / targetText.length : 0;
   const isActive = text.length > 0;
 
@@ -45,10 +45,10 @@ const WritingPage: React.FC = () => {
 
       {/* 구절 정보 */}
       <div style={{ padding: '12px 24px 8px', fontSize: '14px', color: 'var(--color-text-secondary)', fontWeight: 600 }}>
-        {currentVerse ? currentVerse.verseRef : '불러오는 중...'}
+        {verseData.verseRef}
       </div>
 
-      {/* 오버레이 필사 캔버스 심플 구현 */}
+      {/* 오버레이 필사 캔버스 */}
       <div style={{ flex: 1, padding: '0 24px', display: 'flex', flexDirection: 'column' }}>
         <div style={{ position: 'relative', flex: 1, marginTop: '16px' }}>
            {/* 원본 성경 텍스트 */}

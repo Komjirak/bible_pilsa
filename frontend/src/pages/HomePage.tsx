@@ -1,27 +1,23 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BannerAd } from '../components/BannerAd';
-import { useVerseStore } from '../store/useVerseStore';
+import { getSampleVerseForToday, getSampleSequentialVerse } from '../data/sampleBible';
 import '../index.css';
 
 type BibleMode = 'random' | 'sequential';
 
-const HomePage: React.FC = () => {
+const HomePage = () => {
   const navigate = useNavigate();
   const [mode, setMode] = useState<BibleMode>('random');
-  const { currentVerse, isLoading, fetchTodayVerse, fetchSequentialVerse } = useVerseStore();
+  const [verseData, setVerseData] = useState(getSampleVerseForToday());
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (mode === 'random') {
-      fetchTodayVerse();
+      setVerseData(getSampleVerseForToday());
     } else {
-      fetchSequentialVerse(0); // TODO: 유저의 실제 순서 인덱스를 백엔드에서 받아와야 함
+      setVerseData(getSampleSequentialVerse(0));
     }
-  }, [mode, fetchTodayVerse, fetchSequentialVerse]);
-
-  const handleStartWriting = () => {
-    navigate('/writing');
-  };
+  }, [mode]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: 'var(--color-bg-primary)' }}>
@@ -43,6 +39,7 @@ const HomePage: React.FC = () => {
                 color: mode === 'random' ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
                 fontWeight: mode === 'random' ? 700 : 500,
                 boxShadow: mode === 'random' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
+                border: 'none', cursor: 'pointer',
               }}
               onClick={() => setMode('random')}
             >
@@ -55,6 +52,7 @@ const HomePage: React.FC = () => {
                 color: mode === 'sequential' ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
                 fontWeight: mode === 'sequential' ? 700 : 500,
                 boxShadow: mode === 'sequential' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
+                border: 'none', cursor: 'pointer',
               }}
               onClick={() => setMode('sequential')}
             >
@@ -63,28 +61,22 @@ const HomePage: React.FC = () => {
           </div>
         </div>
 
-        {/* 데일리 말씀 카드 Placeholder */}
+        {/* 데일리 말씀 카드 */}
         <div style={{ padding: '0 24px' }}>
           <div style={{ backgroundColor: 'var(--color-bg-secondary)', padding: '24px', borderRadius: '24px' }}>
             <p style={{ color: 'var(--color-text-secondary)', fontSize: '13px', fontWeight: 600, marginBottom: '8px' }}>
               {mode === 'random' ? '오늘의 말씀' : '순서대로 필사'}
             </p>
-            {isLoading ? (
-              <p style={{ fontSize: '16px', color: 'var(--color-text-tertiary)' }}>성경 구절을 불러오는 중...</p>
-            ) : currentVerse ? (
-              <>
-                <p style={{ fontSize: '20px', fontWeight: 600, color: 'var(--color-text-primary)', lineHeight: 1.5 }}>
-                  {currentVerse.text}
-                </p>
-                <p style={{ color: 'var(--color-text-tertiary)', fontSize: '14px', marginTop: '12px' }}>{currentVerse.verseRef}</p>
-              </>
-            ) : (
-              <p style={{ fontSize: '16px', color: 'var(--color-text-tertiary)' }}>데이터가 없습니다.</p>
-            )}
+            <p style={{ fontSize: '20px', fontWeight: 600, color: 'var(--color-text-primary)', lineHeight: 1.5 }}>
+              {verseData.text}
+            </p>
+            <p style={{ color: 'var(--color-text-tertiary)', fontSize: '14px', marginTop: '12px' }}>
+              {verseData.verseRef}
+            </p>
           </div>
         </div>
 
-        {/* 스탬프 보드 Placeholder */}
+        {/* 스탬프 보드 */}
         <div style={{ padding: '0 24px' }}>
           <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '12px' }}>주간 완주 현황</h3>
           <div style={{ display: 'flex', justifyContent: 'space-between', backgroundColor: 'var(--color-bg-secondary)', padding: '16px', borderRadius: '16px' }}>
@@ -112,7 +104,7 @@ const HomePage: React.FC = () => {
               width: '100%', height: '56px', borderRadius: '24px', backgroundColor: 'var(--color-accent)',
               color: '#fff', fontSize: '17px', fontWeight: 600, cursor: 'pointer', border: 'none'
             }} 
-            onClick={handleStartWriting}
+            onClick={() => navigate('/writing')}
           >
             지금 필사하기
           </button>
