@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  userKey           String            @id
+  createdAt         DateTime          @default(now())
+  notification_time String?
+  weeklyChallenges  WeeklyChallenge[]
+  pointHistories    PointHistory[]
+}
+
+model WeeklyChallenge {
+  id            Int      @id @default(autoincrement())
+  userKey       String
+  weekStart     DateTime
+  completedDays Int      @default(0)
+  pointGranted  Boolean  @default(false)
+  user          User     @relation(fields: [userKey], references: [userKey])
+
+  @@unique([userKey, weekStart])
+}
+
+model PointHistory {
+  id        Int      @id @default(autoincrement())
+  userKey   String
+  amount    Int
+  reason    String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userKey], references: [userKey])
+}
