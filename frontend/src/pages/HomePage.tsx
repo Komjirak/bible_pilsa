@@ -80,7 +80,7 @@ const HomePage = () => {
             <span style={{ fontSize: '14px', fontWeight: 600, color: '#3182F6' }}>
               {mode === 'random' ? '오늘의 말씀' : '순서대로 필사'}
             </span>
-            <span style={{ fontSize: '13px', color: '#8B95A1' }}>
+            <span style={{ fontSize: '13px', color: '#8B95A1', paddingRight: '28px' }}>
               {mode === 'random' ? dateLabel : `${progressPercent}% 완료`}
             </span>
           </div>

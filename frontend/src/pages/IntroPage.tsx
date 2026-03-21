@@ -113,7 +113,7 @@ const IntroPage = () => {
               필사하고 보상도 받아요
             </div>
             <div style={{ fontSize: '14px', color: '#8B95A1', lineHeight: 1.4 }}>
-              꾸준히 필사하고 달란트를 모아<br />토스 포인트로 교환할 수 있어요
+              꾸준히 필사학고 달란트를 모아<br />다양한 보상을 받을 수 있어요
             </div>
           </div>
         </div>

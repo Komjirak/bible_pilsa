@@ -29,7 +29,13 @@ const SettingsPage = () => {
             <input
               type="time"
               value={pushTime}
-              onChange={(e) => setPushTime(e.target.value)}
+              onChange={(e) => {
+                const newTime = e.target.value;
+                setPushTime(newTime);
+                if (newTime) {
+                  alert(`매일 ${newTime}에 푸시 알림이 발송되도록 설정되었습니다.`);
+                }
+              }}
               style={{
                 padding: '8px 12px', border: '1px solid #E5E8EB',
                 borderRadius: '10px', fontSize: '15px', fontFamily: 'inherit',
@@ -37,21 +43,6 @@ const SettingsPage = () => {
               }}
             />
           </div>
-          <button
-            onClick={() => {
-              // 추후 백엔드 API 연동 위치: POST /api/user/push-time
-              // 백엔드는 이 시간을 기준으로 Toss Smart Message API (send-message)를 호출해야 함
-              alert(`매일 ${pushTime}에 푸시 메시지가 발송되도록 설정되었습니다.\n(백엔드 Smart Message API 연동 예정)`);
-            }}
-            style={{
-              width: '100%', marginTop: '16px', padding: '12px',
-              backgroundColor: '#F2F4F6', color: '#3182F6',
-              border: 'none', borderRadius: '10px', fontWeight: 700,
-              fontSize: '14px', cursor: 'pointer',
-            }}
-          >
-            설정 저장 (Smart Message 연동)
-          </button>
         </div>
 
         {/* 보기 설정 */}
