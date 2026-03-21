@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useFullScreenAd } from '../hooks/useFullScreenAd';
 import { getSampleVerseForToday, getSampleSequentialVerse } from '../data/sampleBible';
 import { useProgressStore } from '../store/useProgressStore';
+import { useSettingsStore } from '../store/useSettingsStore';
 import '../index.css';
 
 const WritingPage = () => {
@@ -11,6 +12,7 @@ const WritingPage = () => {
   const mode = searchParams.get('mode') || 'random';
   const { showAd, isAdLoaded } = useFullScreenAd();
   const { sequentialIndex } = useProgressStore();
+  const { fontSize } = useSettingsStore();
   const verseData = mode === 'sequential' ? getSampleSequentialVerse(sequentialIndex) : getSampleVerseForToday();
   const targetText = verseData.text;
   
@@ -109,7 +111,8 @@ const WritingPage = () => {
         {/* 오버레이 텍스트 (시각적 피드백) */}
         <div style={{
           position: 'absolute', top: 0, left: '24px', right: '24px',
-          fontSize: '28px', lineHeight: 1.8, fontWeight: 500,
+          fontSize: fontSize === 'small' ? '20px' : fontSize === 'large' ? '28px' : '24px',
+          lineHeight: 1.8, fontWeight: 500,
           pointerEvents: 'none', zIndex: 1,
           whiteSpace: 'pre-wrap', wordBreak: 'break-all',
         }}>
@@ -125,7 +128,8 @@ const WritingPage = () => {
           style={{
             position: 'absolute', top: 0, left: '24px', right: '24px',
             width: 'calc(100% - 48px)', height: '100%',
-            fontSize: '28px', lineHeight: 1.8, fontWeight: 500,
+            fontSize: fontSize === 'small' ? '20px' : fontSize === 'large' ? '28px' : '24px',
+            lineHeight: 1.8, fontWeight: 500,
             color: 'transparent', caretColor: '#3182F6',
             background: 'transparent', border: 'none', resize: 'none',
             outline: 'none', padding: 0, zIndex: 2,

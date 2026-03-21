@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../index.css';
 
 const APP_ICON = 'https://static.toss.im/appsintoss/5277/5d9b8f52-2eba-4b03-93df-e77bb3241c73.png';
 
@@ -23,6 +22,7 @@ const IntroPage = () => {
       }
     } catch (err: any) {
       console.error('Toss appLogin failed:', err);
+      // 에러가 나거나 취소해도 개발환경/테스트 용이를 위해 홈으로 넘김
       if (import.meta.env.DEV || err?.code === 'USER_CANCELLED') {
         navigate('/home');
       }
@@ -35,73 +35,92 @@ const IntroPage = () => {
       display: 'flex', flexDirection: 'column', minHeight: '100vh',
       backgroundColor: '#fff', padding: '0 24px',
     }}>
-      {/* 타이틀 */}
-      <div style={{ paddingTop: '60px', marginBottom: '48px' }}>
+      {/* 상단 타이틀 영역 */}
+      <div style={{ paddingTop: '60px', textAlign: 'center' }}>
+        <p style={{ fontSize: '15px', color: '#8B95A1', marginBottom: '8px', fontWeight: 600 }}>
+          오늘의 마음 운동
+        </p>
         <h1 style={{
-          fontSize: '26px', fontWeight: 800, color: '#191F28',
-          lineHeight: 1.4, letterSpacing: '-0.5px',
+          fontSize: '28px', fontWeight: 800, color: '#191F28', margin: 0,
         }}>
-          매일 성경 말씀을 필사하고<br />포인트 받아가세요
+          말씀 필사하기
         </h1>
       </div>
 
-      {/* 3 Steps */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', flex: 1 }}>
+      {/* 중앙 큰 아이콘 */}
+      <div style={{
+        display: 'flex', justifyContent: 'center', alignItems: 'center',
+        padding: '32px 0 48px',
+      }}>
+        <img
+          src={APP_ICON}
+          alt="메인 아이콘"
+          style={{ width: '120px', height: '120px', borderRadius: '24px' }}
+        />
+      </div>
+
+      {/* 스텝 리스트 */}
+      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, position: 'relative' }}>
+        {/* 연결선 (배경) */}
+        <div style={{
+          position: 'absolute', top: '24px', bottom: '40px', left: '19px',
+          width: '2px', backgroundColor: '#F2F4F6', zIndex: 0,
+        }} />
+
         {/* Step 1 */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
-          <img
-            src={APP_ICON}
-            alt="말씀필사"
-            style={{ width: '44px', height: '44px', borderRadius: '12px', flexShrink: 0 }}
-          />
-          <div>
-            <div style={{ fontSize: '17px', fontWeight: 700, color: '#191F28', marginBottom: '4px' }}>
-              오늘의 말씀 필사
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', marginBottom: '32px', position: 'relative', zIndex: 1 }}>
+          <div style={{
+            width: '40px', height: '40px', borderRadius: '20px', backgroundColor: '#fff',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '22px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+          }}>📖</div>
+          <div style={{ paddingTop: '2px' }}>
+            <div style={{ fontSize: '17px', fontWeight: 700, color: '#191F28', marginBottom: '6px' }}>
+              하루 한 절 성경 필사
             </div>
             <div style={{ fontSize: '14px', color: '#8B95A1', lineHeight: 1.4 }}>
-              하루 한 절의 성경 말씀을 직접 써봐요
+              매일 주어지는 새로운 말씀을<br />직접 따라 써보세요
             </div>
           </div>
         </div>
 
         {/* Step 2 */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
-          <img
-            src={APP_ICON}
-            alt="7일 연속"
-            style={{ width: '44px', height: '44px', borderRadius: '12px', flexShrink: 0 }}
-          />
-          <div>
-            <div style={{ fontSize: '17px', fontWeight: 700, color: '#191F28', marginBottom: '4px' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', marginBottom: '32px', position: 'relative', zIndex: 1 }}>
+          <div style={{
+            width: '40px', height: '40px', borderRadius: '20px', backgroundColor: '#fff',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '22px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+          }}>🎯</div>
+          <div style={{ paddingTop: '2px' }}>
+            <div style={{ fontSize: '17px', fontWeight: 700, color: '#191F28', marginBottom: '6px' }}>
               7일 연속 달성
             </div>
             <div style={{ fontSize: '14px', color: '#8B95A1', lineHeight: 1.4 }}>
-              매일 필사하여 7일 연속 목표를 달성하세요
+              꾸준히 참여하여<br />7일 연속 목표를 달성하세요
             </div>
           </div>
         </div>
 
         {/* Step 3 */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', position: 'relative', zIndex: 1 }}>
           <div style={{
-            width: '44px', height: '44px', borderRadius: '22px',
-            backgroundColor: '#3182F6', display: 'flex', alignItems: 'center',
-            justifyContent: 'center', fontSize: '18px', color: '#fff',
-            fontWeight: 800, flexShrink: 0,
+            width: '40px', height: '40px', borderRadius: '20px', backgroundColor: '#FFD12B',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '18px', fontWeight: 800, color: '#fff',
           }}>P</div>
-          <div>
-            <div style={{ fontSize: '17px', fontWeight: 700, color: '#191F28', marginBottom: '4px' }}>
-              토스 포인트
+          <div style={{ paddingTop: '2px' }}>
+            <div style={{ fontSize: '17px', fontWeight: 700, color: '#191F28', marginBottom: '6px' }}>
+              참여하고 보상도 받아요
             </div>
             <div style={{ fontSize: '14px', color: '#8B95A1', lineHeight: 1.4 }}>
-              적립된 포인트는 토스 앱에서 자유롭게 사용하세요
+              참여만 했다면 누구나<br />토스 포인트를 받을 수 있어요
             </div>
           </div>
         </div>
       </div>
 
       {/* 하단 버튼 */}
-      <div style={{ paddingBottom: '20px' }}>
+      <div style={{ paddingBottom: '24px', backgroundColor: '#fff', paddingTop: '16px' }}>
         <button
           onClick={handleStart}
           disabled={isLoading}
@@ -111,16 +130,11 @@ const IntroPage = () => {
             fontSize: '17px', fontWeight: 600, border: 'none',
             cursor: isLoading ? 'not-allowed' : 'pointer',
             opacity: isLoading ? 0.6 : 1,
+            boxShadow: '0 4px 12px rgba(49, 130, 246, 0.2)'
           }}
         >
           {isLoading ? '로그인 중...' : '시작하기'}
         </button>
-        <p style={{
-          textAlign: 'center', fontSize: '12px', color: '#B0B8C1',
-          marginTop: '12px',
-        }}>
-          성경 번역 출처: 대한성서공회 개역한글판 (1961년판)
-        </p>
       </div>
     </div>
   );

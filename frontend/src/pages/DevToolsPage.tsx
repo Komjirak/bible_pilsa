@@ -35,6 +35,15 @@ const DevToolsPage = () => {
     }
   };
 
+  const resetAll = () => {
+    try {
+      localStorage.removeItem('bible_progress');
+      window.location.reload();
+    } catch (err) {
+      setTestResult('초기화 실패');
+    }
+  };
+
   const testPromotion = async () => {
     setTestResult('테스트 프로모션 호출 중...');
     try {
@@ -93,9 +102,16 @@ const DevToolsPage = () => {
         
         <button 
           onClick={testPromotion}
-          style={{ padding: '16px', backgroundColor: '#3182F6', color: '#fff', borderRadius: '8px', border: 'none', fontWeight: 700 }}
+          style={{ padding: '16px', backgroundColor: '#3182F6', color: '#fff', borderRadius: '8px', border: 'none', fontWeight: 700, cursor: 'pointer' }}
         >
           2. 테스트 코드로 보너스(10P) 호출하기
+        </button>
+
+        <button 
+          onClick={resetAll}
+          style={{ padding: '16px', backgroundColor: '#FF4040', color: '#fff', borderRadius: '8px', border: 'none', fontWeight: 700, marginTop: '24px', cursor: 'pointer' }}
+        >
+          ⚠️ 출결 및 기록 전체 초기화하기
         </button>
       </div>
 

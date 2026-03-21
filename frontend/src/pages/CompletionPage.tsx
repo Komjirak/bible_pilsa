@@ -20,12 +20,14 @@ const CompletionPage = () => {
     if (hasGranted.current) return;
     hasGranted.current = true;
 
-    // 1. 로컬 진행 상태 업데이트
+    // 1. 로컬 진행 상태 업데이트 (출석 관리)
     if (!isTodayCompleted()) {
       completeToday();
-      if (mode === 'sequential') {
-        advanceSequential();
-      }
+    }
+    
+    // 순서대로 모드일 경우 당일 완료 여부와 무관하게 무조건 다음 절로 이동
+    if (mode === 'sequential') {
+      advanceSequential();
     }
 
     // 2. 토스 프로모션 포인트 지급 (서버 없이 SDK 호출)
