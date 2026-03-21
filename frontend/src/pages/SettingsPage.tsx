@@ -84,6 +84,15 @@ const SettingsPage = () => {
             <span style={{ fontSize: '14px', color: '#8B95A1' }}>성경 번역</span>
             <span style={{ fontSize: '14px', color: '#191F28', fontWeight: 500 }}>개역한글판 (1961)</span>
           </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px', borderTop: '1px solid #F2F4F6', paddingTop: '12px' }}>
+            <span style={{ fontSize: '14px', color: '#8B95A1' }}>개발자 메뉴</span>
+            <button 
+              onClick={() => navigate('/dev')}
+              style={{ padding: '4px 8px', borderRadius: '4px', backgroundColor: '#F2F4F6', border: 'none', fontSize: '12px', fontWeight: 600, color: '#4E5968', cursor: 'pointer' }}
+            >
+              테스트 도구 열기
+            </button>
+          </div>
         </div>
       </div>
 
