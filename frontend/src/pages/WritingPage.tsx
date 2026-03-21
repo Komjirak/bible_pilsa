@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useFullScreenAd } from '../hooks/useFullScreenAd';
 import { getSampleVerseForToday, getSampleSequentialVerse } from '../data/sampleBible';
+import { useProgressStore } from '../store/useProgressStore';
 import '../index.css';
 
 const WritingPage = () => {
@@ -9,7 +10,8 @@ const WritingPage = () => {
   const [searchParams] = useSearchParams();
   const mode = searchParams.get('mode') || 'random';
   const { showAd, isAdLoaded } = useFullScreenAd();
-  const verseData = mode === 'sequential' ? getSampleSequentialVerse(0) : getSampleVerseForToday();
+  const { sequentialIndex } = useProgressStore();
+  const verseData = mode === 'sequential' ? getSampleSequentialVerse(sequentialIndex) : getSampleVerseForToday();
   const targetText = verseData.text;
   
   const [text, setText] = useState('');
@@ -26,9 +28,9 @@ const WritingPage = () => {
   const handleSubmit = () => {
     if (text.length > 5) {
       if (isAdLoaded) {
-        showAd(() => navigate('/completion'));
+        showAd(() => navigate(`/completion?mode=${mode}`));
       } else {
-        navigate('/completion');
+        navigate(`/completion?mode=${mode}`);
       }
     } else {
       alert('조금 더 정확하게 입력해주세요.');

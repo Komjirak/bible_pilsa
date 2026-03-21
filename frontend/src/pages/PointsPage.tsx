@@ -1,11 +1,9 @@
 import { useNavigate } from 'react-router-dom';
+import { useProgressStore } from '../store/useProgressStore';
 
 const PointsPage = () => {
   const navigate = useNavigate();
-
-  // 실제 데이터 — 현재 적립 내역 없음
-  const totalPoints = 0;
-  const history: { label: string; date: string; amount: number }[] = [];
+  const { totalPoints, pointHistory } = useProgressStore();
 
   return (
     <div style={{
@@ -40,7 +38,7 @@ const PointsPage = () => {
           padding: '20px 0 16px', margin: 0,
         }}>이용 내역</h3>
 
-        {history.length === 0 ? (
+        {pointHistory.length === 0 ? (
           <div style={{
             textAlign: 'center', padding: '48px 0',
             color: '#B0B8C1', fontSize: '15px',
@@ -52,7 +50,7 @@ const PointsPage = () => {
             </p>
           </div>
         ) : (
-          history.map((item, idx) => (
+          pointHistory.map((item, idx) => (
             <div key={idx} style={{
               display: 'flex', justifyContent: 'space-between',
               padding: '16px 0', borderBottom: '1px solid #F2F4F6',

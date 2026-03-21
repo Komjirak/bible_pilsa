@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../index.css';
 
+const APP_ICON = 'https://static.toss.im/appsintoss/5277/5d9b8f52-2eba-4b03-93df-e77bb3241c73.png';
+
 const IntroPage = () => {
   const [isLoading, setIsLoading] = useState(false);
-
   const navigate = useNavigate();
 
   const handleStart = async () => {
@@ -12,19 +13,16 @@ const IntroPage = () => {
     setIsLoading(true);
 
     try {
-      // 동적 import로 Toss SDK 호출 (레퍼런스 패턴)
       const { appLogin } = await import('@apps-in-toss/web-bridge');
       const { authorizationCode } = await appLogin();
 
       if (authorizationCode) {
-        // 로그인 성공 → 홈으로 이동
         navigate('/home');
       } else {
         setIsLoading(false);
       }
     } catch (err: any) {
       console.error('Toss appLogin failed:', err);
-      // 개발 환경 또는 사용자 취소 시 홈으로 이동
       if (import.meta.env.DEV || err?.code === 'USER_CANCELLED') {
         navigate('/home');
       }
@@ -51,11 +49,11 @@ const IntroPage = () => {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', flex: 1 }}>
         {/* Step 1 */}
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
-          <div style={{
-            width: '44px', height: '44px', borderRadius: '12px',
-            backgroundColor: '#F2F4F6', display: 'flex', alignItems: 'center',
-            justifyContent: 'center', fontSize: '22px', flexShrink: 0,
-          }}>📖</div>
+          <img
+            src={APP_ICON}
+            alt="말씀필사"
+            style={{ width: '44px', height: '44px', borderRadius: '12px', flexShrink: 0 }}
+          />
           <div>
             <div style={{ fontSize: '17px', fontWeight: 700, color: '#191F28', marginBottom: '4px' }}>
               오늘의 말씀 필사
@@ -68,11 +66,11 @@ const IntroPage = () => {
 
         {/* Step 2 */}
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
-          <div style={{
-            width: '44px', height: '44px', borderRadius: '12px',
-            backgroundColor: '#F2F4F6', display: 'flex', alignItems: 'center',
-            justifyContent: 'center', fontSize: '22px', flexShrink: 0,
-          }}>📅</div>
+          <img
+            src={APP_ICON}
+            alt="7일 연속"
+            style={{ width: '44px', height: '44px', borderRadius: '12px', flexShrink: 0 }}
+          />
           <div>
             <div style={{ fontSize: '17px', fontWeight: 700, color: '#191F28', marginBottom: '4px' }}>
               7일 연속 달성
