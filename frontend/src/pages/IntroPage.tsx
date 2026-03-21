@@ -110,10 +110,10 @@ const IntroPage = () => {
           }}>P</div>
           <div style={{ paddingTop: '2px' }}>
             <div style={{ fontSize: '17px', fontWeight: 700, color: '#191F28', marginBottom: '6px' }}>
-              참여하고 보상도 받아요
+              필사하고 보상도 받아요
             </div>
             <div style={{ fontSize: '14px', color: '#8B95A1', lineHeight: 1.4 }}>
-              참여만 했다면 누구나<br />토스 포인트를 받을 수 있어요
+              꾸준히 필사하고 달란트를 모아<br />토스 포인트로 교환할 수 있어요
             </div>
           </div>
         </div>

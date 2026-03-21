@@ -141,8 +141,6 @@ const HomePage = () => {
           {todayDone ? '오늘 필사 완료! ✅' : '지금 필사하기'}
         </button>
 
-        <BannerAd adUnitId="ait.v2.live.65db39c0f5d24194" />
-
         {/* 하단 버튼 */}
         <div style={{ display: 'flex', gap: '12px' }}>
           <button
@@ -162,6 +160,8 @@ const HomePage = () => {
             }}
           >설정</button>
         </div>
+
+        <BannerAd adUnitId="ait.v2.live.65db39c0f5d24194" />
       </div>
     </div>
   );

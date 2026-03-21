@@ -37,6 +37,21 @@ const SettingsPage = () => {
               }}
             />
           </div>
+          <button
+            onClick={() => {
+              // 추후 백엔드 API 연동 위치: POST /api/user/push-time
+              // 백엔드는 이 시간을 기준으로 Toss Smart Message API (send-message)를 호출해야 함
+              alert(`매일 ${pushTime}에 푸시 메시지가 발송되도록 설정되었습니다.\n(백엔드 Smart Message API 연동 예정)`);
+            }}
+            style={{
+              width: '100%', marginTop: '16px', padding: '12px',
+              backgroundColor: '#F2F4F6', color: '#3182F6',
+              border: 'none', borderRadius: '10px', fontWeight: 700,
+              fontSize: '14px', cursor: 'pointer',
+            }}
+          >
+            설정 저장 (Smart Message 연동)
+          </button>
         </div>
 
         {/* 보기 설정 */}
@@ -83,15 +98,6 @@ const SettingsPage = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span style={{ fontSize: '14px', color: '#8B95A1' }}>성경 번역</span>
             <span style={{ fontSize: '14px', color: '#191F28', fontWeight: 500 }}>개역한글판 (1961)</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px', borderTop: '1px solid #F2F4F6', paddingTop: '12px' }}>
-            <span style={{ fontSize: '14px', color: '#8B95A1' }}>개발자 메뉴</span>
-            <button 
-              onClick={() => navigate('/dev')}
-              style={{ padding: '4px 8px', borderRadius: '4px', backgroundColor: '#F2F4F6', border: 'none', fontSize: '12px', fontWeight: 600, color: '#4E5968', cursor: 'pointer' }}
-            >
-              테스트 도구 열기
-            </button>
           </div>
         </div>
       </div>
