@@ -1,61 +1,105 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSettingsStore } from '../store/useSettingsStore';
-import '../index.css';
 
-const SettingsPage: React.FC = () => {
+const SettingsPage = () => {
   const navigate = useNavigate();
   const { pushTime, fontSize, setPushTime, setFontSize } = useSettingsStore();
 
   return (
-    <div className="page-container">
-      <div className="app-nav-bar" style={{ justifyContent: 'center', padding: '0 16px', backgroundColor: 'transparent' }}>
-        <h1 style={{ margin: 0 }}>설정</h1>
+    <div style={{
+      display: 'flex', flexDirection: 'column', minHeight: '100vh',
+      backgroundColor: '#F4F5F7',
+    }}>
+      {/* 헤더 */}
+      <div style={{
+        textAlign: 'center', padding: '12px 16px',
+        backgroundColor: '#fff', borderBottom: '1px solid #F2F4F6',
+      }}>
+        <h1 style={{ fontSize: '18px', fontWeight: 700, color: '#191F28', margin: 0 }}>설정</h1>
       </div>
 
-      <div className="card" style={{ marginTop: '24px' }}>
-        <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px' }}>알림 설정</h3>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: '16px', fontWeight: 500 }}>푸시 알림 시간</span>
-          <input 
-            type="time" 
-            value={pushTime} 
-            onChange={(e) => setPushTime(e.target.value)} 
-            style={{ padding: '8px 12px', border: '1px solid var(--color-border)', borderRadius: '8px', fontSize: '16px', fontFamily: 'inherit' }}
-          />
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px', padding: '16px 20px' }}>
+        {/* 알림 설정 */}
+        <div style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '20px' }}>
+          <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#191F28', marginBottom: '16px' }}>
+            알림 설정
+          </h3>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '15px', fontWeight: 500, color: '#333D4B' }}>푸시 알림 시간</span>
+            <input
+              type="time"
+              value={pushTime}
+              onChange={(e) => setPushTime(e.target.value)}
+              style={{
+                padding: '8px 12px', border: '1px solid #E5E8EB',
+                borderRadius: '10px', fontSize: '15px', fontFamily: 'inherit',
+                color: '#191F28', backgroundColor: '#F8F9FA',
+              }}
+            />
+          </div>
         </div>
-      </div>
 
-      <div className="card">
-        <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px' }}>보기 설정</h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <span style={{ fontSize: '16px', fontWeight: 500 }}>텍스트 폰트 크기</span>
+        {/* 보기 설정 */}
+        <div style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '20px' }}>
+          <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#191F28', marginBottom: '16px' }}>
+            보기 설정
+          </h3>
+          <span style={{ fontSize: '15px', fontWeight: 500, color: '#333D4B', display: 'block', marginBottom: '12px' }}>
+            텍스트 폰트 크기
+          </span>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button 
-              onClick={() => setFontSize('small')}
-              style={{ flex: 1, padding: '12px', borderRadius: '12px', border: fontSize === 'small' ? '2px solid var(--color-primary)' : '1px solid var(--color-border)', fontWeight: 600, fontSize: '14px', color: fontSize === 'small' ? 'var(--color-primary)' : 'var(--color-text-secondary)' }}
-            >
-              작게
-            </button>
-            <button 
-              onClick={() => setFontSize('medium')}
-              style={{ flex: 1, padding: '12px', borderRadius: '12px', border: fontSize === 'medium' ? '2px solid var(--color-primary)' : '1px solid var(--color-border)', fontWeight: 600, fontSize: '16px', color: fontSize === 'medium' ? 'var(--color-primary)' : 'var(--color-text-secondary)' }}
-            >
-              중간
-            </button>
-            <button 
-              onClick={() => setFontSize('large')}
-              style={{ flex: 1, padding: '12px', borderRadius: '12px', border: fontSize === 'large' ? '2px solid var(--color-primary)' : '1px solid var(--color-border)', fontWeight: 600, fontSize: '18px', color: fontSize === 'large' ? 'var(--color-primary)' : 'var(--color-text-secondary)' }}
-            >
-              크게
-            </button>
+            {(['small', 'medium', 'large'] as const).map((size) => {
+              const isActive = fontSize === size;
+              const label = size === 'small' ? '작게' : size === 'medium' ? '중간' : '크게';
+              const previewSize = size === 'small' ? '14px' : size === 'medium' ? '16px' : '18px';
+              return (
+                <button
+                  key={size}
+                  onClick={() => setFontSize(size)}
+                  style={{
+                    flex: 1, padding: '14px 0', borderRadius: '12px',
+                    border: isActive ? '2px solid #3182F6' : '1px solid #E5E8EB',
+                    backgroundColor: isActive ? '#EBF3FE' : '#fff',
+                    color: isActive ? '#3182F6' : '#8B95A1',
+                    fontWeight: 600, fontSize: previewSize, cursor: 'pointer',
+                  }}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 앱 정보 */}
+        <div style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '20px' }}>
+          <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#191F28', marginBottom: '16px' }}>
+            앱 정보
+          </h3>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
+            <span style={{ fontSize: '14px', color: '#8B95A1' }}>버전</span>
+            <span style={{ fontSize: '14px', color: '#191F28', fontWeight: 500 }}>1.0.0</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: '14px', color: '#8B95A1' }}>성경 번역</span>
+            <span style={{ fontSize: '14px', color: '#191F28', fontWeight: 500 }}>개역한글판 (1961)</span>
           </div>
         </div>
       </div>
 
-      <button className="btn-secondary" style={{ marginTop: 'auto' }} onClick={() => navigate('/')}>
-        홈으로 돌아가기
-      </button>
+      {/* 하단 버튼 */}
+      <div style={{ padding: '16px 20px 20px' }}>
+        <button
+          onClick={() => navigate('/home')}
+          style={{
+            width: '100%', height: '52px', borderRadius: '14px',
+            backgroundColor: '#fff', color: '#4E5968',
+            fontSize: '16px', fontWeight: 600, border: 'none', cursor: 'pointer',
+          }}
+        >
+          홈으로 돌아가기
+        </button>
+      </div>
     </div>
   );
 };

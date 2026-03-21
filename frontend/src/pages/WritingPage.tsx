@@ -1,13 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useFullScreenAd } from '../hooks/useFullScreenAd';
-import { getSampleVerseForToday } from '../data/sampleBible';
+import { getSampleVerseForToday, getSampleSequentialVerse } from '../data/sampleBible';
 import '../index.css';
 
 const WritingPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const mode = searchParams.get('mode') || 'random';
   const { showAd, isAdLoaded } = useFullScreenAd();
-  const verseData = getSampleVerseForToday();
+  const verseData = mode === 'sequential' ? getSampleSequentialVerse(0) : getSampleVerseForToday();
   const targetText = verseData.text;
   
   const [text, setText] = useState('');

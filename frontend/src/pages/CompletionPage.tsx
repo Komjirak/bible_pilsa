@@ -1,54 +1,78 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../index.css';
 
-const CompletionPage: React.FC = () => {
+const CompletionPage = () => {
   const navigate = useNavigate();
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: 'var(--color-bg-primary)' }}>
-      <div className="app-nav-bar">
-        <h1>말씀필사</h1>
+    <div style={{
+      display: 'flex', flexDirection: 'column', minHeight: '100vh',
+      backgroundColor: '#fff',
+    }}>
+      {/* 헤더 */}
+      <div style={{
+        textAlign: 'center', padding: '12px 16px',
+        borderBottom: '1px solid #F2F4F6',
+      }}>
+        <h1 style={{ fontSize: '18px', fontWeight: 700, color: '#191F28', margin: 0 }}>말씀필사</h1>
       </div>
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '40px 24px 24px 24px' }}>
-        
-        {/* Success Icon */}
+      <div style={{
+        flex: 1, display: 'flex', flexDirection: 'column',
+        alignItems: 'center', padding: '48px 24px 24px',
+      }}>
+        {/* 성공 아이콘 */}
         <div style={{
-          width: '80px', height: '80px', borderRadius: '40px', backgroundColor: 'var(--color-primary-subtle)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '32px'
+          width: '80px', height: '80px', borderRadius: '40px',
+          background: 'linear-gradient(135deg, #EBF3FE, #D6E7FF)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          marginBottom: '28px',
         }}>
           <span style={{ fontSize: '40px' }}>🙌</span>
         </div>
 
-        <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '12px' }}>필사를 완료했어요</h2>
-        <p style={{ fontSize: '16px', color: 'var(--color-text-secondary)', textAlign: 'center', lineHeight: 1.5 }}>
+        <h2 style={{
+          fontSize: '22px', fontWeight: 700, color: '#191F28', marginBottom: '12px',
+        }}>필사를 완료했어요</h2>
+        <p style={{
+          fontSize: '15px', color: '#8B95A1', textAlign: 'center', lineHeight: 1.6,
+        }}>
           오늘의 말씀을 훌륭하게 적으셨네요!<br />
-          보상으로 <span style={{ color: 'var(--color-primary)', fontWeight: 600 }}>10 달란트</span>가 지급되었습니다.
+          7일 연속 완료 시 <span style={{ color: '#3182F6', fontWeight: 600 }}>10 달란트</span>가 지급됩니다.
         </p>
 
-        {/* Ad Section Placeholder */}
-        <div style={{ width: '100%', marginTop: '40px', backgroundColor: 'var(--color-bg-secondary)', padding: '24px', borderRadius: '24px' }}>
+        {/* 보너스 광고 카드 */}
+        <div style={{
+          width: '100%', marginTop: '36px', backgroundColor: '#F8F9FA',
+          padding: '20px', borderRadius: '16px',
+        }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <p style={{ fontSize: '15px', fontWeight: 700, marginBottom: '4px' }}>보너스 달란트 받기</p>
-              <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)' }}>광고 보고 5 달란트 더 받기</p>
+              <p style={{ fontSize: '15px', fontWeight: 700, color: '#191F28', marginBottom: '4px' }}>
+                보너스 달란트 받기
+              </p>
+              <p style={{ fontSize: '13px', color: '#8B95A1' }}>광고 보고 5 달란트 더 받기</p>
             </div>
             <button style={{
-              padding: '10px 16px', borderRadius: '12px', backgroundColor: 'var(--color-bg-primary)',
-              color: 'var(--color-primary)', fontSize: '14px', fontWeight: 600, boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+              padding: '10px 16px', borderRadius: '12px',
+              backgroundColor: '#fff', color: '#3182F6',
+              fontSize: '14px', fontWeight: 700, border: '1px solid #E5E8EB',
+              cursor: 'pointer',
             }}>
               +5 받기
             </button>
           </div>
         </div>
-
       </div>
 
-      <div style={{ padding: '0 24px 24px', display: 'flex', gap: '12px' }}>
-        <button 
-          style={{ width: '100%', height: '56px', borderRadius: '24px', backgroundColor: 'var(--color-accent)', color: '#fff', fontSize: '17px', fontWeight: 600 }}
-          onClick={() => navigate('/')}
+      {/* 하단 버튼 */}
+      <div style={{ padding: '0 24px 20px' }}>
+        <button
+          onClick={() => navigate('/home')}
+          style={{
+            width: '100%', height: '56px', borderRadius: '16px',
+            backgroundColor: '#3182F6', color: '#fff',
+            fontSize: '17px', fontWeight: 600, border: 'none', cursor: 'pointer',
+          }}
         >
           확인
         </button>

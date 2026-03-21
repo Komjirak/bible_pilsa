@@ -144,7 +144,7 @@ const HomePage = () => {
 
         {/* 필사하기 버튼 */}
         <button
-          onClick={() => navigate('/writing')}
+          onClick={() => navigate(`/writing?mode=${mode}`)}
           style={{
             width: '100%', height: '56px', borderRadius: '16px',
             backgroundColor: '#3182F6', color: '#fff',
