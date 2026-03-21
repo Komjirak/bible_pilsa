@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFullScreenAd } from '../hooks/useFullScreenAd';
+import { useVerseStore } from '../store/useVerseStore';
 import '../index.css';
 
 const WritingPage: React.FC = () => {
   const navigate = useNavigate();
   const [text, setText] = useState('');
   const { showAd, isAdLoaded } = useFullScreenAd();
+  const { currentVerse } = useVerseStore();
   
-  const targetText = '태초에 하나님이 천지를 창조하시니라 (창 1:1)';
+  const targetText = currentVerse ? `${currentVerse.text} (${currentVerse.verseRef})` : '';
   const progress = targetText.length > 0 ? text.length / targetText.length : 0;
   const isActive = text.length > 0;
 
@@ -43,7 +45,7 @@ const WritingPage: React.FC = () => {
 
       {/* 구절 정보 */}
       <div style={{ padding: '12px 24px 8px', fontSize: '14px', color: 'var(--color-text-secondary)', fontWeight: 600 }}>
-        창세기 1장 1절
+        {currentVerse ? currentVerse.verseRef : '불러오는 중...'}
       </div>
 
       {/* 오버레이 필사 캔버스 심플 구현 */}

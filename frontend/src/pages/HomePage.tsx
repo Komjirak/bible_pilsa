@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BannerAd } from '../components/BannerAd';
+import { useVerseStore } from '../store/useVerseStore';
 import '../index.css';
 
 type BibleMode = 'random' | 'sequential';
@@ -8,6 +9,15 @@ type BibleMode = 'random' | 'sequential';
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const [mode, setMode] = useState<BibleMode>('random');
+  const { currentVerse, isLoading, fetchTodayVerse, fetchSequentialVerse } = useVerseStore();
+
+  React.useEffect(() => {
+    if (mode === 'random') {
+      fetchTodayVerse();
+    } else {
+      fetchSequentialVerse(0); // TODO: 유저의 실제 순서 인덱스를 백엔드에서 받아와야 함
+    }
+  }, [mode, fetchTodayVerse, fetchSequentialVerse]);
 
   const handleStartWriting = () => {
     navigate('/writing');
@@ -56,11 +66,21 @@ const HomePage: React.FC = () => {
         {/* 데일리 말씀 카드 Placeholder */}
         <div style={{ padding: '0 24px' }}>
           <div style={{ backgroundColor: 'var(--color-bg-secondary)', padding: '24px', borderRadius: '24px' }}>
-            <p style={{ color: 'var(--color-text-secondary)', fontSize: '13px', fontWeight: 600, marginBottom: '8px' }}>오늘의 말씀</p>
-            <p style={{ fontSize: '20px', fontWeight: 600, color: 'var(--color-text-primary)', lineHeight: 1.5 }}>
-              태초에 하나님이 천지를 창조하시니라
+            <p style={{ color: 'var(--color-text-secondary)', fontSize: '13px', fontWeight: 600, marginBottom: '8px' }}>
+              {mode === 'random' ? '오늘의 말씀' : '순서대로 필사'}
             </p>
-            <p style={{ color: 'var(--color-text-tertiary)', fontSize: '14px', marginTop: '12px' }}>창세기 1장 1절</p>
+            {isLoading ? (
+              <p style={{ fontSize: '16px', color: 'var(--color-text-tertiary)' }}>성경 구절을 불러오는 중...</p>
+            ) : currentVerse ? (
+              <>
+                <p style={{ fontSize: '20px', fontWeight: 600, color: 'var(--color-text-primary)', lineHeight: 1.5 }}>
+                  {currentVerse.text}
+                </p>
+                <p style={{ color: 'var(--color-text-tertiary)', fontSize: '14px', marginTop: '12px' }}>{currentVerse.verseRef}</p>
+              </>
+            ) : (
+              <p style={{ fontSize: '16px', color: 'var(--color-text-tertiary)' }}>데이터가 없습니다.</p>
+            )}
           </div>
         </div>
 
