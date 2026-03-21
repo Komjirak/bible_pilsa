@@ -1,19 +1,109 @@
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState, useRef } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useProgressStore } from '../store/useProgressStore';
+
+// 프로모션 코드 (앱인토스 콘솔에서 발급)
+const PROMOTION_CODE = '01KKBXJR87B4GAEVGGTK81Y3CA';
+const REWARD_AMOUNT = 1; // 필사 1회당 1 토스 포인트
 
 const CompletionPage = () => {
   const navigate = useNavigate();
-  const { completeToday, advanceSequential, totalPoints, isTodayCompleted } = useProgressStore();
+  const [searchParams] = useSearchParams();
+  const mode = searchParams.get('mode') || 'random';
+  const { completeToday, advanceSequential, isTodayCompleted } = useProgressStore();
 
-  // 필사 완료 처리 (중복 방지 내장)
-  if (!isTodayCompleted()) {
-    completeToday();
-    // 순서대로 모드일 경우 다음 절로 이동
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('mode') === 'sequential') {
-      advanceSequential();
+  const [rewardStatus, setRewardStatus] = useState<'pending' | 'success' | 'failed' | 'already'>('pending');
+  const [rewardMessage, setRewardMessage] = useState('');
+  const hasGranted = useRef(false); // 중복 호출 방어
+
+  useEffect(() => {
+    if (hasGranted.current) return;
+    hasGranted.current = true;
+
+    // 1. 로컬 진행 상태 업데이트
+    if (!isTodayCompleted()) {
+      completeToday();
+      if (mode === 'sequential') {
+        advanceSequential();
+      }
     }
-  }
+
+    // 2. 토스 프로모션 포인트 지급 (서버 없이 SDK 호출)
+    grantTossPoint();
+  }, []);
+
+  const grantTossPoint = async () => {
+    try {
+      const { grantPromotionReward } = await import('@apps-in-toss/web-framework');
+
+      const result = await grantPromotionReward({
+        params: {
+          promotionCode: PROMOTION_CODE,
+          amount: REWARD_AMOUNT,
+        },
+      });
+
+      // 결과 처리 (공식 가이드 패턴)
+      if (!result) {
+        // 지원하지 않는 앱 버전
+        console.warn('grantPromotionReward: 지원하지 않는 앱 버전이에요.');
+        setRewardStatus('failed');
+        setRewardMessage('앱 업데이트가 필요해요.');
+        return;
+      }
+
+      if (result === 'ERROR') {
+        console.error('grantPromotionReward: 알 수 없는 오류');
+        setRewardStatus('failed');
+        setRewardMessage('포인트 지급 중 오류가 발생했어요.');
+        return;
+      }
+
+      if ('key' in result) {
+        // 성공!
+        console.log('프로모션 포인트 지급 성공! key:', result.key);
+        setRewardStatus('success');
+        setRewardMessage(`${REWARD_AMOUNT} 토스 포인트가 지급되었어요!`);
+        return;
+      }
+
+      if ('errorCode' in result) {
+        console.error('프로모션 지급 실패:', result.errorCode, result.message);
+
+        // 에러 코드별 사용자 메시지
+        switch (result.errorCode) {
+          case '4110':
+            setRewardStatus('already');
+            setRewardMessage('이미 포인트를 받으셨어요.');
+            break;
+          case '4109':
+            setRewardStatus('failed');
+            setRewardMessage('프로모션 예산이 소진되었어요.');
+            break;
+          case '4111':
+            setRewardStatus('failed');
+            setRewardMessage('프로모션 기간이 아니에요.');
+            break;
+          default:
+            setRewardStatus('failed');
+            setRewardMessage(result.message || '포인트 지급에 실패했어요.');
+        }
+        return;
+      }
+    } catch (err) {
+      console.error('grantPromotionReward 호출 실패:', err);
+      setRewardStatus('failed');
+      setRewardMessage('포인트 지급 중 오류가 발생했어요.');
+    }
+  };
+
+  const statusIcon = rewardStatus === 'success' ? '🎉' :
+                     rewardStatus === 'already' ? '✅' :
+                     rewardStatus === 'failed' ? '😢' : '⏳';
+
+  const statusColor = rewardStatus === 'success' ? '#3182F6' :
+                      rewardStatus === 'already' ? '#8B95A1' :
+                      rewardStatus === 'failed' ? '#FF4040' : '#B0B8C1';
 
   return (
     <div style={{
@@ -45,16 +135,31 @@ const CompletionPage = () => {
           필사를 완료했어요
         </h2>
         <p style={{ fontSize: '15px', color: '#8B95A1', textAlign: 'center', lineHeight: 1.6 }}>
-          오늘의 말씀을 훌륭하게 적으셨네요!<br />
-          현재 보유 달란트: <span style={{ color: '#3182F6', fontWeight: 700 }}>{totalPoints}</span>
+          오늘의 말씀을 훌륭하게 적으셨네요!
         </p>
-        <p style={{ fontSize: '13px', color: '#B0B8C1', marginTop: '8px' }}>
-          7일 연속 완료 시 10 달란트 보너스!
-        </p>
+
+        {/* 토스 포인트 지급 결과 */}
+        <div style={{
+          width: '100%', marginTop: '24px', padding: '20px',
+          backgroundColor: '#F8F9FA', borderRadius: '16px', textAlign: 'center',
+        }}>
+          <span style={{ fontSize: '28px' }}>{statusIcon}</span>
+          <p style={{
+            fontSize: '15px', fontWeight: 600, color: statusColor,
+            marginTop: '8px',
+          }}>
+            {rewardStatus === 'pending' ? '토스 포인트 지급 중...' : rewardMessage}
+          </p>
+          {rewardStatus === 'success' && (
+            <p style={{ fontSize: '13px', color: '#B0B8C1', marginTop: '4px' }}>
+              7일 연속 완료 시 보너스 포인트!
+            </p>
+          )}
+        </div>
 
         {/* 보너스 광고 카드 */}
         <div style={{
-          width: '100%', marginTop: '36px', backgroundColor: '#F8F9FA',
+          width: '100%', marginTop: '20px', backgroundColor: '#F8F9FA',
           padding: '20px', borderRadius: '16px',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
