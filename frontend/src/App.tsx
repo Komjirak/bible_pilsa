@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from './store/useAuthStore';
 import IntroPage from './pages/IntroPage';
 import HomePage from './pages/HomePage';
@@ -21,7 +21,7 @@ function App() {
   }
 
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/intro" element={<IntroPage />} />
         
@@ -47,7 +47,7 @@ function App() {
           element={isAuthenticated ? <SettingsPage /> : <Navigate to="/intro" />} 
         />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
