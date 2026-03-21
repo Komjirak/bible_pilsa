@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { appLogin } from '@apps-in-toss/web-bridge';
 import { apiClient } from '../api/client';
+import { safeStorage } from '../utils/safeStorage';
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -17,7 +18,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   error: null,
   
   initialize: async () => {
-    const token = localStorage.getItem('komjirak_token');
+    const token = safeStorage.getItem('komjirak_token');
     if (token) {
       set({ isAuthenticated: true, isLoading: false });
     } else {
@@ -32,7 +33,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     if (import.meta.env.DEV) {
       // Bypass Toss login in local desktop development
       setTimeout(() => {
-        localStorage.setItem('komjirak_token', 'dev_dummy_token');
+        safeStorage.setItem('komjirak_token', 'dev_dummy_token');
         set({ isAuthenticated: true, isLoading: false });
       }, 500);
       return;
@@ -50,7 +51,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       const { token } = response.data;
       if (token) {
-        localStorage.setItem('komjirak_token', token);
+        safeStorage.setItem('komjirak_token', token);
         set({ isAuthenticated: true, isLoading: false });
       } else {
         throw new Error('Failed to retrieve token from server');

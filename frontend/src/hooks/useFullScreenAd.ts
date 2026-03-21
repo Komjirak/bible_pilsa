@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { loadFullScreenAd, showFullScreenAd } from '@apps-in-toss/web-bridge';
 
 const LIVE_INTERSTITIAL_AD_GROUP_ID = 'ait.v2.live.6255b174cfea47ca';
 
@@ -31,24 +32,21 @@ export function useFullScreenAd(): UseFullScreenAdReturn {
   const showFnRef = useRef<ShowFullScreenAdFn | null>(null);
   const unregisterRef = useRef<(() => void) | null>(null);
 
-  // SDK 동적 로드
+  // SDK static methods mapping
   useEffect(() => {
-    async function loadSdk() {
-      try {
-        const sdk: any = await import(/* @vite-ignore */ '@apps-in-toss/web-bridge').catch(() => null);
-        if (sdk?.loadFullScreenAd && sdk?.showFullScreenAd) {
-          loadFnRef.current = sdk.loadFullScreenAd;
-          showFnRef.current = sdk.showFullScreenAd;
-          const supported = sdk.loadFullScreenAd.isSupported?.() ?? false;
-          setIsSupported(supported);
-        } else {
-          setIsSupported(false);
-        }
-      } catch {
+    try {
+      if (typeof loadFullScreenAd === 'function' && typeof showFullScreenAd === 'function') {
+        loadFnRef.current = loadFullScreenAd as any;
+        showFnRef.current = showFullScreenAd as any;
+        // @ts-ignore
+        const supported = loadFullScreenAd.isSupported?.() ?? false;
+        setIsSupported(supported);
+      } else {
         setIsSupported(false);
       }
+    } catch {
+      setIsSupported(false);
     }
-    loadSdk();
   }, []);
 
   // 광고 로드
