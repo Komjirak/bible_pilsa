@@ -11,9 +11,10 @@ const WritingPage = () => {
   const [searchParams] = useSearchParams();
   const mode = searchParams.get('mode') || 'random';
   const { showAd, isAdLoaded } = useFullScreenAd();
-  const { sequentialIndex } = useProgressStore();
+  const { sequentialIndex, getCurrentRandomOffset } = useProgressStore();
   const { fontSize } = useSettingsStore();
-  const verseData = mode === 'sequential' ? getSampleSequentialVerse(sequentialIndex) : getSampleVerseForToday();
+  const randomOffset = getCurrentRandomOffset();
+  const verseData = mode === 'sequential' ? getSampleSequentialVerse(sequentialIndex) : getSampleVerseForToday(randomOffset);
   const targetText = verseData.text;
   
   const [text, setText] = useState('');

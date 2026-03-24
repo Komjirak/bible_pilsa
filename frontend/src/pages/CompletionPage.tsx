@@ -11,7 +11,7 @@ const CompletionPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const mode = searchParams.get('mode') || 'random';
-  const { completeToday, advanceSequential, isTodayCompleted } = useProgressStore();
+  const { completeToday, advanceSequential, advanceRandom, isTodayCompleted } = useProgressStore();
 
   const [rewardStatus, setRewardStatus] = useState<'pending' | 'success' | 'failed' | 'already' | 'extra'>('pending');
   const [rewardMessage, setRewardMessage] = useState('');
@@ -28,9 +28,11 @@ const CompletionPage = () => {
       completeToday();
     }
     
-    // 순서대로 모드일 경우 당일 완료 여부와 무관하게 무조건 다음 절로 이동
+    // 순서/랜덤 모드 당일 완료 여부와 무관하게 무조건 다음 절로 이동
     if (mode === 'sequential') {
       advanceSequential();
+    } else if (mode === 'random') {
+      advanceRandom();
     }
 
     // 2. 토스 프로모션 포인트 지급 (달란트 적립)

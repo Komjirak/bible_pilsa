@@ -39,14 +39,14 @@ function hashDateToIndex(dateStr: string, poolSize: number): number {
 
 @Injectable()
 export class DailyVerseService {
-  getTodayVerse() {
+  getTodayVerse(offset: number = 0) {
     // KST 기준 오늘 날짜 (YYYY-MM-DD)
     const todayKST = dayjs().tz('Asia/Seoul').format('YYYY-MM-DD');
 
     const pool = getVersePool();
 
     // 날짜 해시 기반 의사 난수 선택 (같은 날 = 같은 구절, 매일 랜덤)
-    const verseIndex = hashDateToIndex(todayKST, pool.length);
+    const verseIndex = hashDateToIndex(`${todayKST}-${offset}`, pool.length);
     const verse = pool[verseIndex];
 
     return {

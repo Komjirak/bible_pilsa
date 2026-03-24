@@ -10,19 +10,20 @@ type BibleMode = 'random' | 'sequential';
 const HomePage = () => {
   const navigate = useNavigate();
   const [mode, setMode] = useState<BibleMode>('random');
-  const { getWeeklyCount, isTodayCompleted, sequentialIndex } = useProgressStore();
+  const { getWeeklyCount, isTodayCompleted, sequentialIndex, getCurrentRandomOffset } = useProgressStore();
   const completedDays = getWeeklyCount();
   const todayDone = isTodayCompleted();
+  const randomOffset = getCurrentRandomOffset();
 
-  const [verseData, setVerseData] = useState(getSampleVerseForToday());
+  const [verseData, setVerseData] = useState(getSampleVerseForToday(randomOffset));
 
   useEffect(() => {
     if (mode === 'random') {
-      setVerseData(getSampleVerseForToday());
+      setVerseData(getSampleVerseForToday(randomOffset));
     } else {
       setVerseData(getSampleSequentialVerse(sequentialIndex));
     }
-  }, [mode, sequentialIndex]);
+  }, [mode, sequentialIndex, randomOffset]);
 
   const today = new Date();
   const dateLabel = `${today.getMonth() + 1}월 ${today.getDate()}일`;
@@ -138,7 +139,7 @@ const HomePage = () => {
             fontSize: '17px', fontWeight: 600, border: 'none', cursor: 'pointer',
           }}
         >
-          {todayDone ? '오늘 필사 완료! ✅' : '지금 필사하기'}
+          {todayDone ? '이어서 필사하기' : '지금 필사하기'}
         </button>
 
         {/* 하단 버튼 */}

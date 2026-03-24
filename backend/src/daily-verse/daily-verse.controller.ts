@@ -8,8 +8,9 @@ export class DailyVerseController {
   // GET /api/v1/daily-verse
   // 오늘의 말씀 구절 반환 (KST 기준)
   @Get()
-  getTodayVerse() {
-    return this.dailyVerseService.getTodayVerse();
+  getTodayVerse(@Query('offset') offsetStr: string) {
+    const offset = parseInt(offsetStr || '0', 10);
+    return this.dailyVerseService.getTodayVerse(offset);
   }
 
   // GET /api/v1/daily-verse/sequential

@@ -103,12 +103,12 @@ function hashDateToIndex(dateStr: string, poolSize: number): number {
   return hash % poolSize;
 }
 
-export function getSampleVerseForToday() {
+export function getSampleVerseForToday(offset: number = 0) {
   const now = new Date();
   const yyyy = now.getFullYear();
   const mm = String(now.getMonth() + 1).padStart(2, '0');
   const dd = String(now.getDate()).padStart(2, '0');
-  const dateStr = `${yyyy}-${mm}-${dd}`;
+  const dateStr = `${yyyy}-${mm}-${dd}-${offset}`;
   const v = SAMPLE_VERSES[hashDateToIndex(dateStr, SAMPLE_VERSES.length)];
   return {
     ...v,
