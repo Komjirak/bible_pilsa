@@ -28,6 +28,15 @@ function getVersePool(): BibleVerse[] {
   return _versePool;
 }
 
+/** DJB2 해시 — 날짜 문자열을 의사 난수 인덱스로 변환 */
+function hashDateToIndex(dateStr: string, poolSize: number): number {
+  let hash = 5381;
+  for (let i = 0; i < dateStr.length; i++) {
+    hash = ((hash << 5) + hash + dateStr.charCodeAt(i)) >>> 0;
+  }
+  return hash % poolSize;
+}
+
 @Injectable()
 export class DailyVerseService {
   getTodayVerse() {
@@ -36,9 +45,8 @@ export class DailyVerseService {
 
     const pool = getVersePool();
 
-    // 날짜 기반 결정론적 선택 (같은 날 모든 사용자에게 동일 구절)
-    const dayOfYear = dayjs(todayKST).diff(dayjs(todayKST).startOf('year'), 'day');
-    const verseIndex = dayOfYear % pool.length;
+    // 날짜 해시 기반 의사 난수 선택 (같은 날 = 같은 구절, 매일 랜덤)
+    const verseIndex = hashDateToIndex(todayKST, pool.length);
     const verse = pool[verseIndex];
 
     return {

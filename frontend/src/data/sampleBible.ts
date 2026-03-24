@@ -94,10 +94,22 @@ export function getSampleSequentialVerse(index: number) {
   };
 }
 
+/** DJB2 해시 — 날짜 문자열을 의사 난수 인덱스로 변환 */
+function hashDateToIndex(dateStr: string, poolSize: number): number {
+  let hash = 5381;
+  for (let i = 0; i < dateStr.length; i++) {
+    hash = ((hash << 5) + hash + dateStr.charCodeAt(i)) >>> 0;
+  }
+  return hash % poolSize;
+}
+
 export function getSampleVerseForToday() {
-  const today = new Date().toISOString().split('T')[0];
-  const found = SAMPLE_VERSES.find((v) => v.date === today);
-  const v = found ?? SAMPLE_VERSES[0];
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const dd = String(now.getDate()).padStart(2, '0');
+  const dateStr = `${yyyy}-${mm}-${dd}`;
+  const v = SAMPLE_VERSES[hashDateToIndex(dateStr, SAMPLE_VERSES.length)];
   return {
     ...v,
     verseRef: `${v.book} ${v.chapter}장 ${v.verse}절`,
