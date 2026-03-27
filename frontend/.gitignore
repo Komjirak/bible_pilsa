@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Toss CLI Artifacts
+*.ait
+.granite/
