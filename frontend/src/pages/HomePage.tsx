@@ -9,7 +9,14 @@ type BibleMode = 'random' | 'sequential';
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<BibleMode>('random');
+  const [mode, setModeState] = useState<BibleMode>(() => {
+    return (localStorage.getItem('bible_last_mode') as BibleMode) || 'random';
+  });
+
+  const setMode = (newMode: BibleMode) => {
+    setModeState(newMode);
+    localStorage.setItem('bible_last_mode', newMode);
+  };
   const { getWeeklyCount, isTodayCompleted, sequentialIndex, getCurrentRandomOffset } = useProgressStore();
   const completedDays = getWeeklyCount();
   const todayDone = isTodayCompleted();

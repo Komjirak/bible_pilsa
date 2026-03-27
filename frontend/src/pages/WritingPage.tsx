@@ -129,6 +129,7 @@ const WritingPage = () => {
           style={{
             position: 'absolute', top: 0, left: '24px', right: '24px',
             width: 'calc(100% - 48px)', height: '100%',
+            fontFamily: 'inherit',
             fontSize: fontSize === 'small' ? '20px' : fontSize === 'large' ? '28px' : '24px',
             lineHeight: 1.8, fontWeight: 500,
             color: 'transparent', caretColor: '#3182F6',

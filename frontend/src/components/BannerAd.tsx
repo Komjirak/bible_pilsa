@@ -3,9 +3,10 @@ import { TossAds } from '@apps-in-toss/web-bridge';
 
 interface BannerAdProps {
   adUnitId: string;
+  variant?: 'default' | 'image-highlight';
 }
 
-export function BannerAd({ adUnitId }: BannerAdProps) {
+export function BannerAd({ adUnitId, variant = 'default' }: BannerAdProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const attachedRef = useRef(false);
 
@@ -31,15 +32,17 @@ export function BannerAd({ adUnitId }: BannerAdProps) {
       ref={containerRef}
       style={{
         width: '100%',
-        minHeight: '70px',
-        backgroundColor: 'var(--color-bg-secondary)',
+        minHeight: variant === 'image-highlight' ? '250px' : '70px',
+        backgroundColor: variant === 'image-highlight' ? '#F2F4F6' : 'var(--color-bg-secondary)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: '12px',
+        borderRadius: '16px',
         color: 'var(--color-text-tertiary)',
         fontSize: '14px',
         overflow: 'hidden',
+        border: variant === 'image-highlight' ? '1px solid #E5E8EB' : 'none',
+        boxShadow: variant === 'image-highlight' ? '0 4px 12px rgba(0,0,0,0.05)' : 'none',
       }}
       data-ad-unit-id={adUnitId}
     />

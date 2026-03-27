@@ -135,18 +135,18 @@ const CompletionPage = () => {
 
       <div style={{
         flex: 1, display: 'flex', flexDirection: 'column',
-        alignItems: 'center', padding: '48px 24px 24px',
+        alignItems: 'center', padding: '24px 24px 16px',
       }}>
         <div style={{
-          width: '80px', height: '80px', borderRadius: '40px',
+          width: '64px', height: '64px', borderRadius: '32px',
           background: 'linear-gradient(135deg, #EBF3FE, #D6E7FF)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          marginBottom: '28px',
+          marginBottom: '16px',
         }}>
-          <span style={{ fontSize: '40px' }}>🙌</span>
+          <span style={{ fontSize: '32px' }}>🙌</span>
         </div>
 
-        <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#191F28', marginBottom: '12px' }}>
+        <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#191F28', marginBottom: '8px' }}>
           필사를 완료했어요
         </h2>
         <p style={{ fontSize: '15px', color: '#8B95A1', textAlign: 'center', lineHeight: 1.6 }}>
@@ -155,7 +155,7 @@ const CompletionPage = () => {
 
         {/* 달란트 지급 결과 */}
         <div style={{
-          width: '100%', marginTop: '24px', padding: '20px',
+          width: '100%', marginTop: '16px', padding: '16px',
           backgroundColor: '#F8F9FA', borderRadius: '16px', textAlign: 'center',
         }}>
           <span style={{ fontSize: '28px' }}>{statusIcon}</span>
@@ -173,8 +173,8 @@ const CompletionPage = () => {
         </div>
 
         {/* 배너 광고 영역으로 대체 */}
-        <div style={{ width: '100%', marginTop: '24px' }}>
-          <BannerAd adUnitId="ait.v2.live.ae8e04b2200544f5" />
+        <div style={{ width: '100%', marginTop: '16px' }}>
+          <BannerAd adUnitId="ait.v2.live.ea1c5bd151b84c2f" variant="image-highlight" />
         </div>
       </div>
 

@@ -50,14 +50,20 @@ function saveState(state: Pick<ProgressState, 'completedDates' | 'sequentialInde
 }
 
 function getToday(): string {
-  return new Date().toISOString().split('T')[0];
+  const now = new Date();
+  const kstOffset = 9 * 60 * 60 * 1000;
+  const kstDate = new Date(now.getTime() + kstOffset);
+  return kstDate.toISOString().split('T')[0];
 }
 
 function getWeekStart(): string {
   const now = new Date();
-  const day = now.getDay(); // 0=Sun
-  const diff = now.getDate() - day;
-  const weekStart = new Date(now.getFullYear(), now.getMonth(), diff);
+  const kstOffset = 9 * 60 * 60 * 1000;
+  const kstDate = new Date(now.getTime() + kstOffset);
+  const day = kstDate.getUTCDay(); // 0=Sun
+  const diff = kstDate.getUTCDate() - day;
+  const weekStart = new Date(kstDate.getTime());
+  weekStart.setUTCDate(diff);
   return weekStart.toISOString().split('T')[0];
 }
 
