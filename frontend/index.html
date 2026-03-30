@@ -7,9 +7,37 @@
     <meta name="theme-color" content="#ffffff" />
     <title>말씀필사</title>
     <meta name="description" content="하루 한 절, 성경 말씀을 직접 타이핑하는 필사 앱" />
+    <style>
+      /* 안드로이드 WebView 폰트 스케일링 기본 방어 (번들 로딩 전 적용) */
+      html, body, * { -webkit-text-size-adjust: none !important; text-size-adjust: none !important; }
+    </style>
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // 안드로이드 OS 폰트 스케일링 역보정 (번들 로딩 전 즉시 실행)
+      (function() {
+        try {
+          var probe = document.createElement('div');
+          probe.style.cssText = 'position:absolute;top:-9999px;left:-9999px;font-size:16px;line-height:1;height:auto;width:auto;visibility:hidden;pointer-events:none';
+          probe.textContent = 'M';
+          document.body.appendChild(probe);
+          var h = probe.getBoundingClientRect().height;
+          document.body.removeChild(probe);
+          var scale = h / 16;
+          if (scale > 1.02 || scale < 0.98) {
+            var correction = 1 / scale;
+            var root = document.getElementById('root');
+            if (root) {
+              root.style.zoom = String(correction);
+              root.style.width = (scale * 100) + '%';
+              root.style.minHeight = (scale * 100) + 'vh';
+            }
+            document.documentElement.style.fontSize = (16 * correction) + 'px';
+          }
+        } catch(e) {}
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
