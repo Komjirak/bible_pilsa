@@ -126,7 +126,7 @@ const IntroPage = () => {
           disabled={isLoading}
           style={{
             width: '100%', height: '56px', borderRadius: '16px',
-            backgroundColor: '#3182F6', color: '#fff',
+            backgroundColor: '#0150D3', color: '#fff',
             fontSize: '17px', fontWeight: 600, border: 'none',
             cursor: isLoading ? 'not-allowed' : 'pointer',
             opacity: isLoading ? 0.6 : 1,

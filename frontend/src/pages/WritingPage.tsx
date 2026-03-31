@@ -95,7 +95,7 @@ const WritingPage = () => {
         <div style={{
           height: '100%',
           width: `${progress * 100}%`,
-          backgroundColor: '#3182F6',
+          backgroundColor: '#0150D3',
           transition: 'width 0.15s ease',
         }} />
       </div>
@@ -133,7 +133,7 @@ const WritingPage = () => {
             fontFamily: 'inherit',
             fontSize: fontSize === 'small' ? '20px' : fontSize === 'large' ? '28px' : '24px',
             lineHeight: 1.8, fontWeight: 500,
-            color: 'transparent', caretColor: '#3182F6',
+            color: 'transparent', caretColor: '#0150D3',
             background: 'transparent', border: 'none', resize: 'none',
             outline: 'none', padding: 0, zIndex: 2,
             whiteSpace: 'pre-wrap', wordBreak: 'break-all',
@@ -154,7 +154,7 @@ const WritingPage = () => {
           disabled={text.length < 5}
           style={{
             width: '100%', height: '56px', borderRadius: '16px',
-            backgroundColor: isComplete ? '#3182F6' : text.length > 5 ? '#3182F6' : '#E5E8EB',
+            backgroundColor: isComplete ? '#0150D3' : text.length > 5 ? '#0150D3' : '#E5E8EB',
             color: text.length > 5 ? '#fff' : '#B0B8C1',
             fontSize: '16px', fontWeight: 600, border: 'none',
             cursor: text.length > 5 ? 'pointer' : 'not-allowed',

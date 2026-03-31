@@ -102,7 +102,7 @@ const DevToolsPage = () => {
         
         <button 
           onClick={testPromotion}
-          style={{ padding: '16px', backgroundColor: '#3182F6', color: '#fff', borderRadius: '8px', border: 'none', fontWeight: 700, cursor: 'pointer' }}
+          style={{ padding: '16px', backgroundColor: '#0150D3', color: '#fff', borderRadius: '8px', border: 'none', fontWeight: 700, cursor: 'pointer' }}
         >
           2. 테스트 코드로 보너스(10P) 호출하기
         </button>

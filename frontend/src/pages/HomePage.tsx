@@ -85,7 +85,7 @@ const HomePage = () => {
           position: 'relative',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <span style={{ fontSize: '14px', fontWeight: 600, color: '#3182F6' }}>
+            <span style={{ fontSize: '14px', fontWeight: 600, color: '#0150D3' }}>
               {mode === 'random' ? '오늘의 말씀' : '순서대로 필사'}
             </span>
             <span style={{ fontSize: '13px', color: '#8B95A1', paddingRight: '28px' }}>
@@ -121,8 +121,8 @@ const HomePage = () => {
               return (
                 <div key={day} style={{
                   width: '34px', height: '34px', borderRadius: '50%',
-                  backgroundColor: isCompleted ? '#3182F6' : '#F2F4F6',
-                  border: isCurrent ? '2px solid #3182F6' : '2px solid transparent',
+                  backgroundColor: isCompleted ? '#0150D3' : '#F2F4F6',
+                  border: isCurrent ? '2px solid #0150D3' : '2px solid transparent',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   transition: 'all 0.2s',
                 }}>
@@ -142,7 +142,7 @@ const HomePage = () => {
           onClick={() => navigate(`/writing?mode=${mode}`)}
           style={{
             width: '100%', height: '60px', borderRadius: '16px',
-            backgroundColor: todayDone ? '#B0B8C1' : '#3182F6', color: '#fff',
+            backgroundColor: todayDone ? '#B0B8C1' : '#0150D3', color: '#fff',
             fontSize: '17px', fontWeight: 600, border: 'none', cursor: 'pointer',
           }}
         >

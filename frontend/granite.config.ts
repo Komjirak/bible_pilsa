@@ -4,7 +4,7 @@ export default defineConfig({
     appName: "komjirak-bible",
     brand: {
         displayName: "말씀필사",
-        primaryColor: "#3182F6",
+        primaryColor: "#0150D3",
         icon: "https://static.toss.im/appsintoss/5277/16db1b4a-6c5f-4c30-bdaa-4a3c53e8fd26.png"
     },
     permissions: [],

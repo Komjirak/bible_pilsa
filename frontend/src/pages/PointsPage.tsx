@@ -61,7 +61,7 @@ const PointsPage = () => {
                 </p>
                 <p style={{ fontSize: '13px', color: '#8B95A1' }}>{item.date}</p>
               </div>
-              <p style={{ fontSize: '15px', fontWeight: 700, color: '#3182F6' }}>
+              <p style={{ fontSize: '15px', fontWeight: 700, color: '#0150D3' }}>
                 +{item.amount}
               </p>
             </div>

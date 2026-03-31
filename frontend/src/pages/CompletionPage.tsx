@@ -115,7 +115,7 @@ const CompletionPage = () => {
                      rewardStatus === 'extra' ? '📖' :
                      rewardStatus === 'failed' ? '😢' : '⏳';
 
-  const statusColor = rewardStatus === 'success' ? '#3182F6' :
+  const statusColor = rewardStatus === 'success' ? '#0150D3' :
                       rewardStatus === 'already' ? '#8B95A1' :
                       rewardStatus === 'extra' ? '#1BCA90' :
                       rewardStatus === 'failed' ? '#FF4040' : '#B0B8C1';
@@ -183,7 +183,7 @@ const CompletionPage = () => {
           onClick={() => navigate('/home')}
           style={{
             width: '100%', height: '60px', borderRadius: '16px',
-            backgroundColor: '#3182F6', color: '#fff',
+            backgroundColor: '#0150D3', color: '#fff',
             fontSize: '17px', fontWeight: 600, border: 'none', cursor: 'pointer',
           }}
         >

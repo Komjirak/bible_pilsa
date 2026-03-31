@@ -64,9 +64,9 @@ const SettingsPage = () => {
                   onClick={() => setFontSize(size)}
                   style={{
                     flex: 1, padding: '14px 0', borderRadius: '12px',
-                    border: isActive ? '2px solid #3182F6' : '1px solid #E5E8EB',
+                    border: isActive ? '2px solid #0150D3' : '1px solid #E5E8EB',
                     backgroundColor: isActive ? '#EBF3FE' : '#fff',
-                    color: isActive ? '#3182F6' : '#8B95A1',
+                    color: isActive ? '#0150D3' : '#8B95A1',
                     fontWeight: 600, fontSize: previewSize, cursor: 'pointer',
                   }}
                 >

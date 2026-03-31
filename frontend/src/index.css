@@ -2,12 +2,12 @@
 
 :root {
   /* Primary — Toss Blue */
-  --color-primary: #3182F6;
+  --color-primary: #0150D3;
   --color-primary-pressed: #1B64DA;
   --color-primary-subtle: #E8F3FF;
 
   /* Accent */
-  --color-accent: #3182F6;
+  --color-accent: #0150D3;
   --color-accent-pressed: #1B64DA;
   --color-accent-subtle: rgba(49, 130, 246, 0.1);
 
@@ -25,7 +25,7 @@
 
   /* Semantic */
   --color-error: #F04452;
-  --color-success: #3182F6; /* Toss uses Blue for success indicators often */
+  --color-success: #0150D3; /* Toss uses Blue for success indicators often */
   --color-warning: #FF9F2E;
 
   /* Typography */
