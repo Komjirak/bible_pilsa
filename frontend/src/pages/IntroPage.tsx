@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const APP_ICON = 'https://static.toss.im/appsintoss/5277/5d9b8f52-2eba-4b03-93df-e77bb3241c73.png';
+const APP_ICON = 'https://static.toss.im/appsintoss/5277/16db1b4a-6c5f-4c30-bdaa-4a3c53e8fd26.png';
 
 const IntroPage = () => {
   const [isLoading, setIsLoading] = useState(false);
