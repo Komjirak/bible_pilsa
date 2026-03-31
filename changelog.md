@@ -11,6 +11,7 @@
   - `fontScaleGuard` 코드 리팩토링: `zoom` 보정, `html.width/height` 확장, `body.justifyContent` 고정, `#root.maxWidth` 해제, `--screen-height` 변수 추가
 - **Android 버튼 높이 최적화**
   - 주요 CTA 버튼 컴포넌트(`HomePage`, `WritingPage`, `SettingsPage`, `CompletionPage`)의 높이를 4~6px 확장하여 Android에서 더 넓은 터치 영역 제공
+  - 플랫폼 감지 클래스(`platform-android`, `platform-ios`)를 `main.tsx`에 추가하고, `index.css`에서 안드로이드 버튼 최소높이를 `64px`로 보정 (iOS는 `60px`)
 - **앱 아이콘 교체 완료**
   - `granite.config.ts` 및 Intro 페이지에서 아이콘 URL을 새 토스 정식 URL로 업데이트
 - **포인트 컬러 통일**

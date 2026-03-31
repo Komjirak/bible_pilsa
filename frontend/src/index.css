@@ -78,6 +78,19 @@ button {
   cursor: pointer;
   border: none;
   background: none;
+  min-height: 56px;
+  padding: 0 16px;
+  border-radius: 14px;
+  transition: all 0.12s ease;
+  touch-action: manipulation;
+}
+
+.platform-android button {
+  min-height: 64px;
+}
+
+.platform-ios button {
+  min-height: 60px;
 }
 
 a {
