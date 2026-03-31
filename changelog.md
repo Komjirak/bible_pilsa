@@ -8,6 +8,7 @@
   - **해결:** JavaScript 런타임에서 실제 렌더링된 16px 요소의 물리적 높이를 측정하여 OS 스케일 팩터를 역산하고, `#root`에 CSS `zoom` 역보정을 적용하는 `fontScaleGuard` 유틸리티 도입
   - `index.html`에 인라인 스크립트로 번들 로딩 전 즉시 역보정을 적용하여 초기 로딩 시에도 레이아웃 깨짐 방지
   - `text-size-adjust: none !important` 글로벌 적용으로 이중 방어
+  - `fontScaleGuard` 코드 리팩토링: `zoom` 보정, `html.width/height` 확장, `body.justifyContent` 고정, `#root.maxWidth` 해제, `--screen-height` 변수 추가
 
 ---
 
