@@ -32,7 +32,7 @@ const IntroPage = () => {
 
   return (
     <div style={{
-      display: 'flex', flexDirection: 'column', minHeight: '100vh',
+      display: 'flex', flexDirection: 'column', minHeight: 'var(--screen-height, 100vh)',
       backgroundColor: '#fff', padding: '0 24px',
     }}>
       {/* 상단 타이틀 영역 */}

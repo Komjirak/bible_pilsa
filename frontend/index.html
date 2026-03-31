@@ -27,13 +27,24 @@
           var scale = h / 16;
           if (scale > 1.02 || scale < 0.98) {
             var correction = 1 / scale;
+            var html = document.documentElement;
             var root = document.getElementById('root');
+            // 1) CSS zoom으로 전체 페이지 균등 역보정
+            html.style.zoom = String(correction);
+            // 2) zoom으로 축소된 만큼 html 치수를 반비례로 확장 (화면 꽉 채우기)
+            html.style.width = (scale * 100) + 'vw';
+            html.style.minHeight = (scale * 100) + 'vh';
+            html.style.overflowX = 'hidden';
+            // 3) body flex 중앙 정렬 해제 (좌측 기준 배치)
+            document.body.style.justifyContent = 'flex-start';
+            // 4) #root max-width 제거, min-height 확장 (화면 전체 높이 채우기)
             if (root) {
-              root.style.zoom = String(correction);
-              root.style.width = (scale * 100) + '%';
+              root.style.maxWidth = 'none';
               root.style.minHeight = (scale * 100) + 'vh';
             }
-            document.documentElement.style.fontSize = (16 * correction) + 'px';
+            // 5) zoom-보정된 스크린 높이를 CSS 변수로 노출
+            //    페이지 컴포넌트에서 height:var(--screen-height) 사용 시 실제 화면 꽉 참
+            html.style.setProperty('--screen-height', (scale * 100) + 'vh');
           }
         } catch(e) {}
       })();

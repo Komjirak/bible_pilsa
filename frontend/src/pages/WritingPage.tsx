@@ -76,7 +76,8 @@ const WritingPage = () => {
 
   return (
     <div style={{
-      display: 'flex', flexDirection: 'column', height: '100vh',
+      display: 'flex', flexDirection: 'column',
+      height: 'var(--screen-height, 100vh)',
       backgroundColor: '#fff', overflow: 'hidden',
     }}>
       {/* 헤더 */}
@@ -108,7 +109,7 @@ const WritingPage = () => {
       </div>
 
       {/* 필사 영역 */}
-      <div style={{ flex: 1, padding: '0 24px', position: 'relative' }}>
+      <div style={{ flex: 1, padding: '0 24px', position: 'relative', overflow: 'hidden' }}>
         {/* 오버레이 텍스트 (시각적 피드백) */}
         <div style={{
           position: 'absolute', top: 0, left: '24px', right: '24px',

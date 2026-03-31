@@ -45,13 +45,18 @@ function measureFontScale(): number {
 }
 
 /**
- * html 루트 요소에 역보정 font-size를 적용합니다.
- * 예: OS 스케일이 1.5x이면 html font-size를 (16/1.5)px ≈ 10.67px로 설정하여
- *     하위 rem/em 기반 크기가 원래대로 렌더링되게 합니다.
- * 
- * 그러나 이 앱은 inline style에서 px 단위를 직접 사용하고 있으므로,
- * html의 font-size 조정만으로는 부족합니다.
- * 대신 전체 #root에 CSS zoom 역보정을 적용합니다.
+ * html 루트 요소에 CSS zoom 역보정을 적용합니다.
+ *
+ * transform: scale()은 레이아웃 좌표계는 그대로 두고 시각적 렌더링만 축소하므로
+ * absolute/fixed 포지션 요소들이 잘못된 위치에 렌더링되는 문제가 생깁니다.
+ *
+ * CSS zoom은 레이아웃과 렌더링을 함께 균등하게 조정하므로
+ * 포지션 요소가 깨지지 않고 의도한 디자인대로 표시됩니다.
+ * Android WebView(Chromium 기반)에서 zoom 속성을 지원합니다.
+ *
+ * zoom만 적용하면 html이 viewport의 (correction * 100)%만 채워 빈 공간이 생기므로,
+ * html 너비를 (scale * 100)vw로 확장하고 body 정렬을 flex-start로 고정해야 합니다.
+ * 또한 #root max-width: 480px가 확장된 html 너비에서 clip되지 않도록 제거합니다.
  */
 function applyFontScaleCorrection(scale: number): void {
   if (scale <= 0 || Math.abs(scale - 1) < 0.02) {
@@ -60,24 +65,38 @@ function applyFontScaleCorrection(scale: number): void {
   }
 
   const correction = 1 / scale;
-  const root = document.getElementById('root');
   const html = document.documentElement;
-  
+  const body = document.body;
+  const root = document.getElementById('root');
+
+  // 1) CSS zoom으로 전체 페이지를 균등하게 역보정
+  //    textZoom=1.5 → zoom=0.667 → 폰트 24px * 0.667 = 16px (의도한 크기)
+  (html.style as CSSStyleDeclaration & { zoom: string }).zoom = String(correction);
+
+  // 2) zoom으로 콘텐츠가 시각적으로 축소된 만큼 html 치수를 반비례로 확장
+  //    (예: zoom=0.667이면 html을 150vw로 확장 → 150vw * 0.667 = 100vw 시각적 너비)
+  html.style.width = `${scale * 100}vw`;
+  html.style.minHeight = `${scale * 100}vh`;
+  html.style.overflowX = 'hidden';
+
+  // 3) body의 flex 중앙 정렬 해제 — html 확장 후 #root가 좌측 기준으로 배치되도록
+  body.style.justifyContent = 'flex-start';
+
+  // 4) #root max-width: 480px 제거 — html이 480px 이상으로 확장될 때 clip 방지
+  //    min-height도 확장 — #root가 시각적으로 화면 전체 높이를 채우도록
   if (root) {
-    // 1) CSS zoom을 사용한 역보정 (Android WebView에서 잘 동작)
-    root.style.zoom = String(correction);
-    
-    // 2) zoom으로 축소된 만큼 width/height를 역으로 확대하여 레이아웃 유지
-    root.style.width = `${scale * 100}%`;
+    root.style.maxWidth = 'none';
     root.style.minHeight = `${scale * 100}vh`;
   }
-  
-  // html에도 font-size 역보정 적용 (rem 기반 스타일 방어)
-  html.style.fontSize = `${BASE_FONT_SIZE * correction}px`;
+
+  // 5) CSS 변수로 zoom-보정된 스크린 높이 노출
+  //    zoom=0.667일 때 height:100vh는 시각적 66.7%만 채움.
+  //    height:var(--screen-height) = 150vh CSS → 150vh*0.667 = 100vh 시각적으로 화면 꽉 참.
+  html.style.setProperty('--screen-height', `${scale * 100}vh`);
 
   console.log(
     `[FontScaleGuard] OS 폰트 스케일 ${scale.toFixed(2)}x 감지 → ` +
-    `zoom: ${correction.toFixed(4)}, html font-size: ${(BASE_FONT_SIZE * correction).toFixed(2)}px`
+    `html zoom: ${correction.toFixed(4)}, width: ${scale * 100}vw, --screen-height: ${scale * 100}vh`
   );
 }
 
