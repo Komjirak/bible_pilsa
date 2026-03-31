@@ -98,7 +98,7 @@ const SettingsPage = () => {
         <button
           onClick={() => navigate('/home')}
           style={{
-            width: '100%', height: '52px', borderRadius: '14px',
+            width: '100%', height: '56px', borderRadius: '14px',
             backgroundColor: '#fff', color: '#4E5968',
             fontSize: '16px', fontWeight: 600, border: 'none', cursor: 'pointer',
           }}

@@ -141,7 +141,7 @@ const HomePage = () => {
         <button
           onClick={() => navigate(`/writing?mode=${mode}`)}
           style={{
-            width: '100%', height: '56px', borderRadius: '16px',
+            width: '100%', height: '60px', borderRadius: '16px',
             backgroundColor: todayDone ? '#B0B8C1' : '#3182F6', color: '#fff',
             fontSize: '17px', fontWeight: 600, border: 'none', cursor: 'pointer',
           }}
@@ -154,7 +154,7 @@ const HomePage = () => {
           <button
             onClick={() => navigate('/points')}
             style={{
-              flex: 1, height: '48px', borderRadius: '12px', border: 'none',
+              flex: 1, height: '52px', borderRadius: '12px', border: 'none',
               backgroundColor: '#fff', color: '#4E5968',
               fontSize: '14px', fontWeight: 600, cursor: 'pointer',
             }}
@@ -162,7 +162,7 @@ const HomePage = () => {
           <button
             onClick={() => navigate('/settings')}
             style={{
-              flex: 1, height: '48px', borderRadius: '12px', border: 'none',
+              flex: 1, height: '52px', borderRadius: '12px', border: 'none',
               backgroundColor: '#fff', color: '#4E5968',
               fontSize: '14px', fontWeight: 600, cursor: 'pointer',
             }}

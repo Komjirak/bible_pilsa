@@ -153,7 +153,7 @@ const WritingPage = () => {
           onClick={handleSubmit}
           disabled={text.length < 5}
           style={{
-            width: '100%', height: '52px', borderRadius: '16px',
+            width: '100%', height: '56px', borderRadius: '16px',
             backgroundColor: isComplete ? '#3182F6' : text.length > 5 ? '#3182F6' : '#E5E8EB',
             color: text.length > 5 ? '#fff' : '#B0B8C1',
             fontSize: '16px', fontWeight: 600, border: 'none',

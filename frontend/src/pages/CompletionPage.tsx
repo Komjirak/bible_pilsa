@@ -182,7 +182,7 @@ const CompletionPage = () => {
         <button
           onClick={() => navigate('/home')}
           style={{
-            width: '100%', height: '56px', borderRadius: '16px',
+            width: '100%', height: '60px', borderRadius: '16px',
             backgroundColor: '#3182F6', color: '#fff',
             fontSize: '17px', fontWeight: 600, border: 'none', cursor: 'pointer',
           }}
