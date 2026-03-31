@@ -9,6 +9,12 @@
   - `index.html`에 인라인 스크립트로 번들 로딩 전 즉시 역보정을 적용하여 초기 로딩 시에도 레이아웃 깨짐 방지
   - `text-size-adjust: none !important` 글로벌 적용으로 이중 방어
   - `fontScaleGuard` 코드 리팩토링: `zoom` 보정, `html.width/height` 확장, `body.justifyContent` 고정, `#root.maxWidth` 해제, `--screen-height` 변수 추가
+- **Android 버튼 높이 최적화**
+  - 주요 CTA 버튼 컴포넌트(`HomePage`, `WritingPage`, `SettingsPage`, `CompletionPage`)의 높이를 4~6px 확장하여 Android에서 더 넓은 터치 영역 제공
+- **앱 아이콘 교체 완료**
+  - `granite.config.ts` 및 Intro 페이지에서 아이콘 URL을 새 토스 정식 URL로 업데이트
+- **`.ait` 빌드 수행**
+  - `npm run build` + `node node_modules/@apps-in-toss/cli/dist/index.js build` 로 `komjirak-bible.ait` 생성 완료
 
 ---
 
