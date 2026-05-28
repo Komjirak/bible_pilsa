@@ -8,11 +8,17 @@ app.use(express.json());
 
 const JWT_SECRET = process.env.JWT_SECRET || 'komjirak-bible-secret';
 
-// Prisma v7: 항상 accelerateUrl 필요 (Vercel Prisma Postgres = prisma+postgres:// URL)
-const base = new PrismaClient({ accelerateUrl: process.env.DATABASE_URL });
-const prisma = base.$extends(withAccelerate());
+let prisma = null;
+let prismaError = null;
 
-// JWT 검증 미들웨어
+try {
+  const base = new PrismaClient({ accelerateUrl: process.env.DATABASE_URL });
+  prisma = base.$extends(withAccelerate());
+} catch (e) {
+  prismaError = e;
+  console.error('[api/index] Prisma init error:', e.message);
+}
+
 function authGuard(req, res, next) {
   const auth = req.headers['authorization'];
   if (!auth?.startsWith('Bearer ')) return res.status(401).json({ message: '인증 필요' });
@@ -25,8 +31,14 @@ function authGuard(req, res, next) {
   }
 }
 
-// GET /api/v1/progress
-app.get('/api/v1/progress', authGuard, async (req, res) => {
+function requireDb(req, res, next) {
+  if (!prisma) {
+    return res.status(503).json({ error: 'DB unavailable', detail: prismaError?.message });
+  }
+  next();
+}
+
+app.get('/api/v1/progress', authGuard, requireDb, async (req, res) => {
   try {
     const user = await prisma.user.findUnique({ where: { userKey: req.userKey } });
     if (!user) return res.json({ sequentialIndex: 0, completedDates: [], randomOffset: 0, totalPoints: 0, pointHistory: [] });
@@ -43,8 +55,7 @@ app.get('/api/v1/progress', authGuard, async (req, res) => {
   }
 });
 
-// POST /api/v1/progress
-app.post('/api/v1/progress', authGuard, async (req, res) => {
+app.post('/api/v1/progress', authGuard, requireDb, async (req, res) => {
   try {
     const data = req.body;
     const update = {};
@@ -66,12 +77,10 @@ app.post('/api/v1/progress', authGuard, async (req, res) => {
   }
 });
 
-// POST /api/v1/auth/token
-app.post('/api/v1/auth/token', async (req, res) => {
+app.post('/api/v1/auth/token', requireDb, async (req, res) => {
   try {
     const { authorizationCode, referrer } = req.body;
 
-    // mTLS 인증서 없는 환경(Vercel)에서는 authorizationCode로 fallback userKey 생성
     let userKey;
     if (process.env.NODE_ENV !== 'production' && authorizationCode?.startsWith('mock-')) {
       userKey = 'dev-user-mock';
@@ -79,7 +88,6 @@ app.post('/api/v1/auth/token', async (req, res) => {
       const axios = require('axios');
       const fs = require('fs');
       const https = require('https');
-      const path = require('path');
 
       let httpsAgent;
       const certPath = process.env.TOSS_CERT_PATH;
@@ -117,6 +125,11 @@ app.post('/api/v1/auth/token', async (req, res) => {
   }
 });
 
-app.get('/', (req, res) => res.json({ status: 'ok', service: 'komjirak-bible-api' }));
+app.get('/', (req, res) => res.json({
+  status: 'ok',
+  service: 'komjirak-bible-api',
+  db: prisma ? 'connected' : 'error',
+  dbError: prismaError?.message ?? null,
+}));
 
 module.exports = app;
