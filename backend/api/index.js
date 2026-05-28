@@ -12,7 +12,19 @@ let prisma = null;
 let prismaError = null;
 
 try {
-  const base = new PrismaClient({ accelerateUrl: process.env.DATABASE_URL });
+  // Vercel Prisma Postgres integration can store the accelerate URL in any of these vars
+  const accelerateUrl = [
+    process.env.DATABASE_URL,
+    process.env.PRISMA_DATABASE_URL,
+    process.env.POSTGRES_URL,
+  ].find((url) => url?.startsWith('prisma://') || url?.startsWith('prisma+postgres://'));
+
+  if (!accelerateUrl) throw new Error(
+    `No valid Prisma Accelerate URL found. Checked DATABASE_URL, PRISMA_DATABASE_URL, POSTGRES_URL. ` +
+    `Values start with: ${[process.env.DATABASE_URL, process.env.PRISMA_DATABASE_URL, process.env.POSTGRES_URL].map(u => u?.slice(0, 15) ?? 'undefined').join(', ')}`
+  );
+
+  const base = new PrismaClient({ accelerateUrl });
   prisma = base.$extends(withAccelerate());
 } catch (e) {
   prismaError = e;
