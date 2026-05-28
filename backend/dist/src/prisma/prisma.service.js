@@ -20,10 +20,8 @@ let PrismaService = class PrismaService {
     _client;
     constructor() {
         const url = process.env.DATABASE_URL ?? '';
-        const base = new client_1.PrismaClient();
-        this._client = url.startsWith('prisma+postgres://')
-            ? base.$extends((0, extension_accelerate_1.withAccelerate)())
-            : base;
+        const base = new client_1.PrismaClient({ accelerateUrl: url });
+        this._client = base.$extends((0, extension_accelerate_1.withAccelerate)());
         this.user = this._client.user;
         this.weeklyChallenge = this._client.weeklyChallenge;
         this.pointHistory = this._client.pointHistory;

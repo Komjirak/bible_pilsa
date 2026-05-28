@@ -12,9 +12,8 @@ export class PrismaService implements OnModuleInit {
 
   constructor() {
     const url = process.env.DATABASE_URL ?? '';
-    const isPrismaPostgres = url.startsWith('prisma+postgres://');
-    const base = new PrismaClient(isPrismaPostgres ? { accelerateUrl: url } : {});
-    this._client = isPrismaPostgres ? base.$extends(withAccelerate()) : base;
+    const base = new PrismaClient({ accelerateUrl: url });
+    this._client = base.$extends(withAccelerate());
 
     this.user = this._client.user;
     this.weeklyChallenge = this._client.weeklyChallenge;
