@@ -6,27 +6,23 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AuthModule = void 0;
+exports.ProgressModule = void 0;
 const common_1 = require("@nestjs/common");
-const axios_1 = require("@nestjs/axios");
 const jwt_1 = require("@nestjs/jwt");
-const auth_controller_1 = require("./auth.controller");
-const auth_service_1 = require("./auth.service");
-let AuthModule = class AuthModule {
+const progress_controller_1 = require("./progress.controller");
+const progress_service_1 = require("./progress.service");
+let ProgressModule = class ProgressModule {
 };
-exports.AuthModule = AuthModule;
-exports.AuthModule = AuthModule = __decorate([
+exports.ProgressModule = ProgressModule;
+exports.ProgressModule = ProgressModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            axios_1.HttpModule,
             jwt_1.JwtModule.register({
                 secret: process.env.JWT_SECRET || 'komjirak-bible-secret',
-                signOptions: { expiresIn: '90d' },
             }),
         ],
-        controllers: [auth_controller_1.AuthController],
-        providers: [auth_service_1.AuthService],
-        exports: [jwt_1.JwtModule],
+        controllers: [progress_controller_1.ProgressController],
+        providers: [progress_service_1.ProgressService],
     })
-], AuthModule);
-//# sourceMappingURL=auth.module.js.map
+], ProgressModule);
+//# sourceMappingURL=progress.module.js.map

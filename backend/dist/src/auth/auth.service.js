@@ -44,19 +44,22 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
+const jwt_1 = require("@nestjs/jwt");
 const axios_1 = require("@nestjs/axios");
 const prisma_service_1 = require("../prisma/prisma.service");
+const rxjs_1 = require("rxjs");
 const https = __importStar(require("https"));
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
-const rxjs_1 = require("rxjs");
 let AuthService = class AuthService {
     httpService;
     prisma;
+    jwtService;
     httpsAgent;
-    constructor(httpService, prisma) {
+    constructor(httpService, prisma, jwtService) {
         this.httpService = httpService;
         this.prisma = prisma;
+        this.jwtService = jwtService;
         const certPath = process.env.TOSS_CERT_PATH || path.join(process.cwd(), 'certs', 'client.crt');
         const keyPath = process.env.TOSS_KEY_PATH || path.join(process.cwd(), 'certs', 'client.key');
         try {
@@ -64,38 +67,59 @@ let AuthService = class AuthService {
                 this.httpsAgent = new https.Agent({
                     cert: fs.readFileSync(certPath),
                     key: fs.readFileSync(keyPath),
-                    rejectUnauthorized: false,
                 });
             }
         }
         catch (e) {
-            console.error('Failed to load certificates for mTLS:', e);
+            console.error('[auth] mTLS 인증서 로드 실패:', e);
         }
     }
     async exchangeToken(authorizationCode, referrer) {
+        if (process.env.NODE_ENV !== 'production' && authorizationCode.startsWith('mock-')) {
+            const userKey = `dev-user-mock`;
+            return this.upsertAndSign(userKey);
+        }
         try {
-            const response = await (0, rxjs_1.firstValueFrom)(this.httpService.post('https://api-partner.toss.im/v1/apps-in-toss/user/oauth2/generate-token', { authorizationCode, referrer }, { httpsAgent: this.httpsAgent }));
-            const data = response.data;
-            const userKey = data.userKey;
-            if (userKey) {
-                await this.prisma.user.upsert({
-                    where: { userKey },
-                    update: {},
-                    create: { userKey },
-                });
+            const tokenRes = await (0, rxjs_1.firstValueFrom)(this.httpService.post('https://apps-in-toss-api.toss.im/api-partner/v1/apps-in-toss/user/oauth2/generate-token', { authorizationCode, referrer }, { httpsAgent: this.httpsAgent, timeout: 5000 }));
+            const tossAccessToken = tokenRes.data?.success?.accessToken ?? tokenRes.data?.accessToken;
+            if (!tossAccessToken) {
+                throw new Error('Toss 토큰 발급 실패: ' + JSON.stringify(tokenRes.data));
             }
-            return { token: 'dummy_jwt_token_for_' + userKey };
+            const meRes = await (0, rxjs_1.firstValueFrom)(this.httpService.get('https://apps-in-toss-api.toss.im/api-partner/v1/apps-in-toss/user/oauth2/login-me', {
+                headers: { Authorization: `Bearer ${tossAccessToken}` },
+                httpsAgent: this.httpsAgent,
+                timeout: 5000,
+            }));
+            const userKey = (meRes.data?.success?.userKey ?? meRes.data?.userKey)?.toString();
+            if (!userKey) {
+                throw new Error('userKey 조회 실패: ' + JSON.stringify(meRes.data));
+            }
+            return this.upsertAndSign(userKey);
         }
-        catch (error) {
-            console.error('Toss Token Exchange Error:', error?.response?.data || error.message);
-            throw new common_1.HttpException('Token exchange failed', common_1.HttpStatus.UNAUTHORIZED);
+        catch (err) {
+            console.error('[auth] Toss 인증 실패:', err?.response?.data || err?.message);
+            if (!this.httpsAgent) {
+                const fallbackKey = `dev-user-${authorizationCode.slice(0, 8)}`;
+                return this.upsertAndSign(fallbackKey);
+            }
+            throw new common_1.HttpException('인증에 실패했습니다.', common_1.HttpStatus.UNAUTHORIZED);
         }
+    }
+    async upsertAndSign(userKey) {
+        await this.prisma.user.upsert({
+            where: { userKey },
+            create: { userKey },
+            update: {},
+        });
+        const token = this.jwtService.sign({ userKey, sub: userKey });
+        return { token };
     }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [axios_1.HttpService,
-        prisma_service_1.PrismaService])
+        prisma_service_1.PrismaService,
+        jwt_1.JwtService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

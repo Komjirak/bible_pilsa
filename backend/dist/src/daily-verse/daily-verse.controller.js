@@ -20,8 +20,9 @@ let DailyVerseController = class DailyVerseController {
     constructor(dailyVerseService) {
         this.dailyVerseService = dailyVerseService;
     }
-    getTodayVerse() {
-        return this.dailyVerseService.getTodayVerse();
+    getTodayVerse(offsetStr) {
+        const offset = parseInt(offsetStr || '0', 10);
+        return this.dailyVerseService.getTodayVerse(offset);
     }
     getVerseByIndex(indexStr) {
         const index = parseInt(indexStr || '0', 10);
@@ -31,8 +32,9 @@ let DailyVerseController = class DailyVerseController {
 exports.DailyVerseController = DailyVerseController;
 __decorate([
     (0, common_1.Get)(),
+    __param(0, (0, common_1.Query)('offset')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], DailyVerseController.prototype, "getTodayVerse", null);
 __decorate([

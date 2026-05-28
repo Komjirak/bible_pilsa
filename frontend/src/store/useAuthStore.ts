@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { appLogin } from '@apps-in-toss/web-bridge';
 import { apiClient } from '../api/client';
 import { safeStorage } from '../utils/safeStorage';
+import { useProgressStore } from './useProgressStore';
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -20,7 +21,18 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   initialize: async () => {
     const token = safeStorage.getItem('komjirak_token');
     if (token) {
+      // DEV 모드에서는 검증 생략 (로컬 개발용 더미 토큰 허용)
+      if (!import.meta.env.DEV) {
+        // JWT 형식 검증 (xxx.yyy.zzz — 3파트). 이전 더미 토큰 자동 폐기
+        const isValidJwt = token.split('.').length === 3;
+        if (!isValidJwt) {
+          safeStorage.removeItem('komjirak_token');
+          set({ isAuthenticated: false, isLoading: false });
+          return;
+        }
+      }
       set({ isAuthenticated: true, isLoading: false });
+      useProgressStore.getState().syncFromServer();
     } else {
       set({ isAuthenticated: false, isLoading: false });
     }
@@ -53,6 +65,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       if (token) {
         safeStorage.setItem('komjirak_token', token);
         set({ isAuthenticated: true, isLoading: false });
+        // 로그인 성공 후 서버에서 진도 로드 (업데이트 전 데이터 복원)
+        useProgressStore.getState().syncFromServer();
       } else {
         throw new Error('Failed to retrieve token from server');
       }
@@ -66,3 +80,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 }));
+
+// apiClient에서 401 발생 시 → 즉시 로그아웃 처리
+if (typeof window !== 'undefined') {
+  window.addEventListener('auth:logout', () => {
+    useAuthStore.setState({ isAuthenticated: false, isLoading: false });
+  });
+}

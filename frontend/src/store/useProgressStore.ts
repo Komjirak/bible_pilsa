@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { safeStorage } from '../utils/safeStorage';
+import { fetchProgress, saveProgress } from '../api/client';
 
 interface PointRecord {
   label: string;
@@ -8,145 +9,156 @@ interface PointRecord {
 }
 
 interface ProgressState {
-  // 주간 완료 날짜 배열 (ISO string: "2026-03-21")
   completedDates: string[];
-  // 순서대로 모드의 현재 인덱스
   sequentialIndex: number;
-  // 달란트 총액
   totalPoints: number;
-  // 달란트 이력
   pointHistory: PointRecord[];
-  // 오늘 이미 필사 완료했는지
-  isTodayCompleted: () => boolean;
-  // 이번 주 완료 횟수
-  getWeeklyCount: () => number;
-  // 필사 완료 처리
-  completeToday: () => void;
-  // 순서대로 인덱스 증가
-  advanceSequential: () => void;
-  
-  // 랜덤 모드의 현재 오프셋
   randomOffset: number;
-  // 현재 유효한 랜덤 오프셋 가져오기 (초회차는 항상 0)
+  isSynced: boolean;
+
+  isTodayCompleted: () => boolean;
+  getWeeklyCount: () => number;
   getCurrentRandomOffset: () => number;
-  // 랜덤 모드 오프셋 증가
+
+  // 서버에서 진도 로드 (앱 시작 시 호출)
+  syncFromServer: () => Promise<void>;
+  completeToday: () => void;
+  advanceSequential: () => void;
   advanceRandom: () => void;
 }
 
 const STORAGE_KEY = 'bible_progress';
 
-function loadState() {
+function loadLocal() {
   const raw = safeStorage.getItem(STORAGE_KEY);
   if (!raw) return { completedDates: [], sequentialIndex: 0, randomOffset: 0, totalPoints: 0, pointHistory: [] };
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return { completedDates: [], sequentialIndex: 0, randomOffset: 0, totalPoints: 0, pointHistory: [] };
-  }
+  try { return JSON.parse(raw); } catch { return { completedDates: [], sequentialIndex: 0, randomOffset: 0, totalPoints: 0, pointHistory: [] }; }
 }
 
-function saveState(state: Pick<ProgressState, 'completedDates' | 'sequentialIndex' | 'randomOffset' | 'totalPoints' | 'pointHistory'>) {
+function persist(state: Pick<ProgressState, 'completedDates' | 'sequentialIndex' | 'randomOffset' | 'totalPoints' | 'pointHistory'>) {
   safeStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
 function getToday(): string {
-  const now = new Date();
-  const kstOffset = 9 * 60 * 60 * 1000;
-  const kstDate = new Date(now.getTime() + kstOffset);
+  const kstDate = new Date(Date.now() + 9 * 3600000);
   return kstDate.toISOString().split('T')[0];
 }
 
 function getWeekStart(): string {
-  const now = new Date();
-  const kstOffset = 9 * 60 * 60 * 1000;
-  const kstDate = new Date(now.getTime() + kstOffset);
-  const day = kstDate.getUTCDay(); // 0=Sun
-  const diff = kstDate.getUTCDate() - day;
-  const weekStart = new Date(kstDate.getTime());
-  weekStart.setUTCDate(diff);
-  return weekStart.toISOString().split('T')[0];
+  const kstDate = new Date(Date.now() + 9 * 3600000);
+  const day = kstDate.getUTCDay();
+  kstDate.setUTCDate(kstDate.getUTCDate() - day);
+  return kstDate.toISOString().split('T')[0];
 }
 
 export const useProgressStore = create<ProgressState>((set, get) => {
-  const saved = loadState();
+  const saved = loadLocal();
+
   return {
     completedDates: saved.completedDates || [],
     sequentialIndex: saved.sequentialIndex || 0,
     randomOffset: saved.randomOffset || 0,
     totalPoints: saved.totalPoints || 0,
     pointHistory: saved.pointHistory || [],
+    isSynced: false,
 
-    isTodayCompleted: () => {
-      return get().completedDates.includes(getToday());
-    },
+    isTodayCompleted: () => get().completedDates.includes(getToday()),
 
-    getCurrentRandomOffset: () => {
-      // 오늘 이미 1회차 필사를 완료했다면 누적된 오프셋 사용, 아니면 새 날이므로 0
-      return get().completedDates.includes(getToday()) ? get().randomOffset : 0;
-    },
+    getCurrentRandomOffset: () =>
+      get().completedDates.includes(getToday()) ? get().randomOffset : 0,
 
     getWeeklyCount: () => {
       const weekStart = getWeekStart();
       return get().completedDates.filter((d: string) => d >= weekStart).length;
     },
 
+    // 서버에서 진도 로드 — 로그인 후 호출
+    syncFromServer: async () => {
+      const serverData = await fetchProgress();
+      if (!serverData) return; // 미인증 or 오프라인 → localStorage 유지
+
+      // 서버 데이터와 로컬 데이터 중 더 앞선 값 사용
+      const local = loadLocal();
+      const merged = {
+        sequentialIndex: Math.max(serverData.sequentialIndex, local.sequentialIndex || 0),
+        completedDates: mergeArrays(serverData.completedDates, local.completedDates || []),
+        randomOffset: Math.max(serverData.randomOffset, local.randomOffset || 0),
+        totalPoints: Math.max(serverData.totalPoints, local.totalPoints || 0),
+        pointHistory: mergePointHistory(serverData.pointHistory, local.pointHistory || []),
+      };
+
+      persist(merged);
+      set({ ...merged, isSynced: true });
+
+      // 병합된 최신 데이터를 서버에 다시 저장
+      saveProgress(merged);
+    },
+
     completeToday: () => {
       const today = getToday();
       const state = get();
-      if (state.completedDates.includes(today)) return; // 중복 방지
+      if (state.completedDates.includes(today)) return;
 
       const newDates = [...state.completedDates, today];
       const weekStart = getWeekStart();
       const weeklyCount = newDates.filter((d: string) => d >= weekStart).length;
-
-      // 7일 연속 달성 시 보너스
       const isWeeklyBonus = weeklyCount === 7;
       const bonusPoints = isWeeklyBonus ? 10 : 0;
 
       const now = new Date();
-      const timeLabel = `${now.getMonth() + 1}월 ${now.getDate()}일 ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+      const timeLabel = `${now.getMonth() + 1}월 ${now.getDate()}일 ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
       const newHistory: PointRecord[] = [
         { label: '매일 필사 완료', date: timeLabel, amount: 1 },
         ...state.pointHistory,
       ];
-
       if (isWeeklyBonus) {
         newHistory.unshift({ label: '🎉 7일 연속 달성 보너스', date: timeLabel, amount: 10 });
       }
 
-      const newState = {
+      const next = {
         completedDates: newDates,
         sequentialIndex: state.sequentialIndex,
-        randomOffset: 0, // 새 날짜 초회 달성 시 오프셋 리셋
+        randomOffset: 0,
         totalPoints: state.totalPoints + 1 + bonusPoints,
         pointHistory: newHistory,
       };
-
-      saveState(newState);
-      set(newState);
+      persist(next);
+      set(next);
+      saveProgress(next);
     },
 
     advanceSequential: () => {
       const state = get();
-      const newIndex = state.sequentialIndex + 1;
-      const newState = {
-        ...state,
-        sequentialIndex: newIndex,
-      };
-      saveState({ completedDates: newState.completedDates, sequentialIndex: newIndex, randomOffset: newState.randomOffset, totalPoints: newState.totalPoints, pointHistory: newState.pointHistory });
-      set({ sequentialIndex: newIndex });
+      const next = { ...state, sequentialIndex: state.sequentialIndex + 1 };
+      persist({ completedDates: next.completedDates, sequentialIndex: next.sequentialIndex, randomOffset: next.randomOffset, totalPoints: next.totalPoints, pointHistory: next.pointHistory });
+      set({ sequentialIndex: next.sequentialIndex });
+      saveProgress({ sequentialIndex: next.sequentialIndex });
     },
 
     advanceRandom: () => {
       const state = get();
-      const newOffset = state.randomOffset + 1;
-      const newState = {
-        ...state,
-        randomOffset: newOffset,
-      };
-      saveState({ completedDates: newState.completedDates, sequentialIndex: newState.sequentialIndex, randomOffset: newOffset, totalPoints: newState.totalPoints, pointHistory: newState.pointHistory });
-      set({ randomOffset: newOffset });
+      const next = { ...state, randomOffset: state.randomOffset + 1 };
+      persist({ completedDates: next.completedDates, sequentialIndex: next.sequentialIndex, randomOffset: next.randomOffset, totalPoints: next.totalPoints, pointHistory: next.pointHistory });
+      set({ randomOffset: next.randomOffset });
+      saveProgress({ randomOffset: next.randomOffset });
     },
   };
 });
+
+function mergeArrays(a: string[], b: string[]): string[] {
+  return Array.from(new Set([...a, ...b])).sort();
+}
+
+function mergePointHistory(
+  a: PointRecord[],
+  b: PointRecord[],
+): PointRecord[] {
+  const seen = new Set<string>();
+  return [...a, ...b].filter((r) => {
+    const key = `${r.date}-${r.label}-${r.amount}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}

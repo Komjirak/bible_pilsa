@@ -1,5 +1,5 @@
 export declare class DailyVerseService {
-    getTodayVerse(): {
+    getTodayVerse(offset?: number): {
         date: string;
         book: string;
         chapter: number;

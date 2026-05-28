@@ -10,6 +10,11 @@ model User {
   userKey           String            @id
   createdAt         DateTime          @default(now())
   notification_time String?
+  sequentialIndex   Int               @default(0)
+  completedDates    String            @default("[]")
+  randomOffset      Int               @default(0)
+  totalPoints       Int               @default(0)
+  pointHistory      String            @default("[]")
   weeklyChallenges  WeeklyChallenge[]
   pointHistories    PointHistory[]
 }

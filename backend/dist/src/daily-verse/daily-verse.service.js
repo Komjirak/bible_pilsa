@@ -60,12 +60,18 @@ function getVersePool() {
     }
     return _versePool;
 }
+function hashDateToIndex(dateStr, poolSize) {
+    let hash = 5381;
+    for (let i = 0; i < dateStr.length; i++) {
+        hash = ((hash << 5) + hash + dateStr.charCodeAt(i)) >>> 0;
+    }
+    return hash % poolSize;
+}
 let DailyVerseService = class DailyVerseService {
-    getTodayVerse() {
+    getTodayVerse(offset = 0) {
         const todayKST = (0, dayjs_1.default)().tz('Asia/Seoul').format('YYYY-MM-DD');
         const pool = getVersePool();
-        const dayOfYear = (0, dayjs_1.default)(todayKST).diff((0, dayjs_1.default)(todayKST).startOf('year'), 'day');
-        const verseIndex = dayOfYear % pool.length;
+        const verseIndex = hashDateToIndex(`${todayKST}-${offset}`, pool.length);
         const verse = pool[verseIndex];
         return {
             date: todayKST,
