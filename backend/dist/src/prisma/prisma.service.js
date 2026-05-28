@@ -12,13 +12,24 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PrismaService = void 0;
 const common_1 = require("@nestjs/common");
 const client_1 = require("@prisma/client");
-let PrismaService = class PrismaService extends client_1.PrismaClient {
+const extension_accelerate_1 = require("@prisma/extension-accelerate");
+let PrismaService = class PrismaService {
+    user;
+    weeklyChallenge;
+    pointHistory;
+    _client;
     constructor() {
         const url = process.env.DATABASE_URL ?? '';
-        super(url.startsWith('prisma+postgres://') ? { accelerateUrl: url } : {});
+        const base = new client_1.PrismaClient();
+        this._client = url.startsWith('prisma+postgres://')
+            ? base.$extends((0, extension_accelerate_1.withAccelerate)())
+            : base;
+        this.user = this._client.user;
+        this.weeklyChallenge = this._client.weeklyChallenge;
+        this.pointHistory = this._client.pointHistory;
     }
     async onModuleInit() {
-        await this.$connect();
+        await this._client.$connect();
     }
 };
 exports.PrismaService = PrismaService;
