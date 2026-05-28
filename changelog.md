@@ -1,5 +1,27 @@
 # Changelog - 말씀필사 (Komjirak Bible)
 
+## [1.2.0] - 2026-05-28
+
+### 🚀 백엔드 서버 연동 (Backend Integration)
+- **서버 구축 완료 (`api.komjirak.studio`)**
+  - Vercel + Prisma v6 + PostgreSQL(Vercel Postgres) 기반 백엔드 배포
+  - JWT 인증 (90일 만료), 진도·포인트·출석 데이터 영구 저장 API
+- **앱 업데이트 시 데이터 유실 방지**
+  - localStorage(기기) + 서버 데이터를 `Math.max` 방식으로 병합
+  - 출석 날짜는 합집합(Set union)으로 처리하여 누락 없음
+  - 더 앞선 값을 자동 선택하므로 업데이트 후에도 기존 달란트/출석 유지
+- **구 더미 토큰 자동 폐기**
+  - 이전 버전의 `dummy_jwt_token_for_xxx` 형식 토큰 감지 시 자동 삭제 후 재인증
+- **401 응답 시 자동 재로그인**
+  - 만료된 토큰으로 API 호출 시 토큰 삭제 후 자동으로 재인증 흐름 진행
+
+### 🛠 빌드 개선
+- **`ait build` 명령어로 빌드 전환**
+  - 기존 수동 zip 패키징 대신 공식 `ait build` CLI 사용
+  - `app.json` (deploymentId 포함) 자동 생성
+
+---
+
 ## [1.0.4] - 2026-03-30
 
 ### 🛠 버그 픽스 (Bug Fixes)
