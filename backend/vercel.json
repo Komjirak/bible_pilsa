@@ -1,11 +1,9 @@
 {
   "version": 2,
-  "buildCommand": "npx prisma generate && npm run build && npx prisma db push --accept-data-loss",
-  "outputDirectory": ".",
+  "buildCommand": "npx prisma generate && npx prisma db push --accept-data-loss",
   "functions": {
     "api/index.js": {
-      "maxDuration": 30,
-      "includeFiles": "dist/**"
+      "maxDuration": 30
     }
   },
   "routes": [
