@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "npm run build && npx prisma db push",
+  "buildCommand": "npx prisma generate && npm run build",
   "outputDirectory": ".",
   "functions": {
     "api/index.js": {
