@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "npx prisma generate && npx prisma db push --accept-data-loss",
+  "buildCommand": "npx prisma generate",
   "functions": {
     "api/index.js": {
       "maxDuration": 60
